@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; img-src 'self' data:; connect-src 'self'; script-src 'self' 'sha256-KmOSFPgemuZvM2TSStLNl09d5AqArMJpqIAnF4gUMw4='; style-src 'self' 'sha256-XWEoNn20tYttnLj2SMn9S9oQbjqiE1GgEMgDp7cS9AE='; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Cybex // Cybersecurity Roadmap</title>
+<style>
+:root{
+  --bg:#070a0d;--panel:#0e1411;--panel2:#121a16;--text:#edf8f0;--muted:#91a69a;
+  --line:#1d3025;--accent:#59f28d;--accent2:#25c96a;--glow:rgba(89,242,141,.25);
+  --danger:#ff4d5f;--danger2:#c92f45;--blue:#4ea1ff;--blue2:#286bd8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 50% -10%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 36%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;transition:background .7s ease,color .4s ease}
+body[data-path="red"]{--accent:#ff5266;--accent2:#d92f46;--glow:rgba(255,82,102,.25);--line:#3a2025;--panel:#130d10;--panel2:#1b1115}
+body[data-path="blue"]{--accent:#53a7ff;--accent2:#2878df;--glow:rgba(83,167,255,.25);--line:#1e3044;--panel:#0c121a;--panel2:#111a25}
+body.path-changing:before{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;background:var(--accent);opacity:0;animation:pathFlash .65s ease}
+@keyframes pathFlash{0%{opacity:0}35%{opacity:.16}100%{opacity:0}}
+#boot-screen{position:fixed;inset:0;z-index:9999;background:#030605;color:#59f28d;display:grid;place-items:center;transition:opacity .5s ease,visibility .5s ease}
+#boot-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+.boot-terminal{font-family:"Courier New",monospace;text-align:center;line-height:1.15;padding:30px;filter:drop-shadow(0 0 10px rgba(89,242,141,.35));animation:bootFlicker 1.8s steps(2,end) infinite}
+.boot-lock{font-size:clamp(42px,9vw,86px);white-space:pre;margin-bottom:12px}
+.boot-title{font-size:clamp(28px,6vw,58px);font-weight:900;letter-spacing:.18em;text-shadow:0 0 12px rgba(89,242,141,.65)}
+.boot-status{margin-top:14px;font-size:12px;letter-spacing:.18em;color:#91a69a}
+@keyframes bootFlicker{0%,100%{opacity:1}48%{opacity:.92}50%{opacity:.75}52%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#boot-screen{transition:none}.boot-terminal{animation:none}}
+header{padding:46px 6vw 30px;border-bottom:1px solid var(--line);background:linear-gradient(135deg,rgba(14,22,17,.96),rgba(8,12,16,.94));transition:background .7s}
+body[data-path="red"] header{background:linear-gradient(135deg,rgba(35,11,16,.96),rgba(15,9,12,.94))}
+body[data-path="blue"] header{background:linear-gradient(135deg,rgba(10,22,37,.96),rgba(8,12,18,.94))}
+h1{margin:0;font-size:clamp(30px,5vw,58px);letter-spacing:-2px}
+h2{margin-top:0}h3{margin-bottom:7px}
+.accent{color:var(--accent);transition:color .5s}.sub{max-width:850px;color:var(--muted);font-size:17px}
+.badge{display:inline-block;border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:2px 9px;font-size:12px;margin:2px}
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.tabs{max-width:1250px;margin:auto;padding:0 5vw;display:flex;gap:3px;overflow:auto}
+.tab{position:relative;color:var(--muted);background:none;border:0;padding:15px 13px;font:inherit;white-space:nowrap;cursor:pointer}
+.tab:after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2px;border-radius:9px;background:var(--accent);transform:scaleX(0);box-shadow:0 0 12px var(--accent);transition:transform .35s ease}
+.tab.active{color:var(--text)}.tab.active:after{transform:scaleX(1)}
+.layout{display:flex;min-height:calc(100vh - 130px)}
+.sidebar{width:230px;flex:0 0 230px;border-right:1px solid var(--line);background:color-mix(in srgb,var(--panel) 72%,transparent);padding:18px 12px;position:sticky;top:72px;height:calc(100vh - 72px);align-self:flex-start;backdrop-filter:blur(12px)}
+.sidebar-title{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);padding:8px 10px 10px}
+.side-link{width:100%;text-align:left;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:9px;padding:10px 11px;margin:2px 0;font:inherit;font-weight:650}
+.side-link:hover{background:var(--panel2);color:var(--text);transform:none}.side-link.active{color:var(--text);border-color:var(--line);background:var(--panel2);box-shadow:inset 3px 0 var(--accent),0 0 14px rgba(0,0,0,.12)}
+.side-profile{margin-top:18px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--panel2)}
+.side-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#06100a;font-weight:900;margin-bottom:9px;overflow:hidden}.side-avatar img{width:100%;height:100%;object-fit:cover}
+.side-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.side-meta{font-size:11px;color:var(--muted);margin-top:2px}
+main{flex:1;min-width:0;max-width:1150px;margin:0 auto;padding:30px 6vw 70px}
+.profile-page{max-width:850px}.profile-head{display:flex;gap:20px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel2);margin-bottom:18px}.profile-avatar{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#06100a;font-size:30px;font-weight:900;overflow:hidden;flex:0 0 auto}.profile-avatar img{width:100%;height:100%;object-fit:cover}.profile-fields{display:grid;gap:12px}.profile-fields label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}.profile-fields input{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px}.profile-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.secondary{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.section-kicker{font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent);font-weight:800;margin-bottom:6px}
+.hero,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0;box-shadow:0 8px 35px rgba(0,0,0,.12)}
+.tab-panel{display:none;animation:panelIn .38s ease}.tab-panel.active{display:block}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.grid,.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.phase{border-left:4px solid var(--accent);padding:18px;background:var(--panel);border-radius:10px;margin:14px 0;box-shadow:0 0 0 1px rgba(255,255,255,.01)}
+ul{padding-left:22px}.check{display:flex;gap:9px;margin:7px 0}.check input{accent-color:var(--accent);width:16px;height:16px}
+a{color:var(--accent)}.source{display:block;margin:8px 0}.note{color:var(--muted)}
+.warn{border-left:4px solid #ffd166;padding:12px 15px;background:#17150f}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.progress{height:9px;background:#202733;border-radius:99px;overflow:hidden}.bar{height:100%;width:0;background:var(--accent);transition:.35s;box-shadow:0 0 14px var(--glow)}
+button{background:var(--accent);color:#06100a;border:0;border-radius:8px;padding:8px 12px;font-weight:800;cursor:pointer;transition:.25s}
+button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.save-status{font-size:12px;color:var(--muted);margin-left:auto}
+.path-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:20px 0}
+.path-card{position:relative;text-align:left;display:flex;flex-direction:column;gap:7px;padding:22px;border:1px solid var(--line);background:var(--panel2);color:var(--text);overflow:hidden}
+.path-card:before{content:"";position:absolute;inset:0;background:var(--accent);opacity:0;transition:.35s}.path-card:hover:before{opacity:.06}
+.path-card.red{--accent:#ff5266}.path-card.blue{--accent:#53a7ff}
+.path-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+.path-card strong,.path-card small{position:relative}.path-card small{color:var(--muted);font-weight:400}
+.course-map{display:none;margin-top:25px}.course-map.active{display:block;animation:panelIn .35s ease}
+.course{padding:17px;border:1px solid var(--line);background:var(--panel2);border-radius:10px;display:flex;flex-direction:column;gap:5px}.course span{color:var(--muted)}
+.syncbox{padding:15px;border:1px dashed var(--line);border-radius:10px;margin-top:15px}
+footer{border-top:1px solid var(--line);padding:25px 6vw;color:var(--muted)}
+@media(max-width:850px){.sidebar{width:190px;flex-basis:190px}}
+@media(max-width:700px){.layout{display:block}.sidebar{position:static;width:auto;height:auto;border-right:0;border-bottom:1px solid var(--line);display:flex;gap:5px;overflow:auto;padding:8px}.sidebar-title{display:none}.side-link{white-space:nowrap;width:auto}.side-profile{display:none}.path-grid{grid-template-columns:1fr}.tabs{padding:0 2vw}.tab{padding:13px 9px}.profile-head{align-items:flex-start}}
+
+.phase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:22px 0}
+.phase-card{min-height:150px;text-align:left;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 8px 28px rgba(0,0,0,.12)}
+.phase-card:hover{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 10px 35px rgba(0,0,0,.18)}
+.phase-card .phase-num{font-size:12px;color:var(--accent);font-weight:900;letter-spacing:.12em}
+.phase-card .phase-title{font-size:18px;font-weight:850;margin-top:6px}.phase-card .phase-goal{color:var(--muted);font-size:13px}
+.phase-view{display:none;margin-top:18px}.phase-view.active{display:block;animation:panelIn .28s ease}
+.phase-view .phase{margin:0}.close-phase{margin-bottom:12px}
+.auth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.auth-grid .card{margin:0}
+.form-grid{display:grid;gap:10px}.form-grid input,.form-grid textarea{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit}.form-grid textarea{min-height:90px;resize:vertical}
+.community-results{display:grid;gap:10px;margin-top:15px}.user-result{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}.user-result .mini-avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#06100a;font-weight:900;overflow:hidden;flex:0 0 auto}.mini-avatar img{width:100%;height:100%;object-fit:cover}.user-result .grow{min-width:0;flex:1}.user-result small{color:var(--muted)}
+.message-list{max-height:330px;overflow:auto;display:grid;gap:8px;margin:12px 0}.message{padding:10px;border:1px solid var(--line);border-radius:9px;background:var(--panel2)}.message small{color:var(--muted)}
+.status{font-size:12px;color:var(--muted);min-height:20px;margin-top:8px}.offline-note{border-left:4px solid #ffd166;padding:11px 14px;background:#17150f;margin:12px 0}
+@media(max-width:850px){.phase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.auth-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.phase-grid{grid-template-columns:1fr}}
+
+
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tab-panel,.phase-view,.phase-card,.course-map{scroll-margin-top:80px}
+.check{cursor:pointer;align-items:flex-start}.check input{margin-top:4px;flex:0 0 auto}
+.path-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 0 30px var(--glow)}
+.mini{display:block;height:4px;background:#202733;border-radius:9px;overflow:hidden;margin:10px 0 4px}.mini i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.deep{margin-top:16px;padding-top:6px;border-top:1px dashed var(--line)}.deep h4{margin:16px 0 6px;color:var(--accent)}.deep ul{margin:4px 0}
+details.mod{border:1px solid var(--line);background:var(--panel2);border-radius:10px;margin:10px 0}
+details.mod summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.mod summary::-webkit-details-marker{display:none}details.mod[open] summary{border-bottom:1px solid var(--line)}
+details.mod .body{padding:6px 16px 14px}.tag{font-size:12px;color:var(--muted);font-weight:400}.pathbar{margin:8px 0 4px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+.boot-terminal{animation:none;position:relative;width:min(420px,86vw)}
+.boot-lock{white-space:normal;font-size:clamp(54px,11vw,92px);line-height:1;animation:lockFloat 1.6s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(89,242,141,.55))}
+.boot-lock.open{animation:lockPop .5s ease}
+@keyframes lockFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.06)}}
+@keyframes lockPop{0%{transform:scale(1)}40%{transform:scale(1.3) rotate(-8deg)}100%{transform:scale(1)}}
+.boot-bar{height:4px;margin:20px auto 0;background:#12241a;border-radius:9px;overflow:hidden}
+.boot-bar i{display:block;height:100%;width:0;background:#59f28d;box-shadow:0 0 14px #59f28d}
+#boot-screen:after{content:"";position:absolute;left:0;right:0;height:120px;top:-120px;pointer-events:none;background:linear-gradient(transparent,rgba(89,242,141,.07),transparent);animation:scan 2.6s linear infinite}
+@keyframes scan{to{transform:translateY(calc(100vh + 240px))}}
+@media(prefers-reduced-motion:reduce){.boot-lock,#boot-screen:after{animation:none}}
+.lab-grid,.proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;margin-top:16px}
+.lab,.proj{display:flex;flex-direction:column;gap:8px;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.lab h3,.proj h3{margin:0}.lab ul{margin:2px 0 4px;color:var(--muted)}
+.lvl{align-self:flex-start;font-size:12px;font-weight:700;color:var(--accent);border:1px solid var(--accent);border-radius:99px;padding:1px 9px}
+.btn{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;color:var(--text);text-decoration:none;font-weight:650;margin:4px 6px 0 0}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.lab .links,.proj .meta{margin-top:auto}
+.proj.done{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.proj label{display:flex;gap:8px;align-items:center;font-weight:700;cursor:pointer;margin-top:auto}.proj label input{accent-color:var(--accent);width:16px;height:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.chip{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.chip[aria-pressed=true]{background:var(--accent);color:#06100a;border-color:var(--accent)}
+.lib-search{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:11px;font:inherit}
+.lib-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;margin-top:8px}
+.lib-item{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);text-decoration:none;color:var(--text)}
+.lib-item:hover{border-color:var(--accent)}.lib-item b{display:block;color:var(--accent)}.lib-item span{color:var(--muted);font-size:13px}.lib-item small{color:var(--muted)}
+
+body:after{content:"";position:fixed;inset:-20%;z-index:-1;pointer-events:none;opacity:.5;background:radial-gradient(40% 35% at 20% 20%,var(--glow),transparent 70%),radial-gradient(35% 30% at 80% 75%,var(--glow),transparent 70%);animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate3d(6%,4%,0) scale(1.12)}}
+h1 .accent{background:linear-gradient(90deg,var(--accent) 30%,#fff 50%,var(--accent) 70%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:-220% 0}}
+.tab.active:after{animation:pulseBar 3.2s ease-in-out infinite}@keyframes pulseBar{50%{box-shadow:0 0 20px var(--accent)}}
+@keyframes panelIn{from{opacity:0;transform:translateY(14px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+.tab-panel{animation:panelIn .55s cubic-bezier(.2,.7,.2,1)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.tab-panel.active>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.tab-panel.active>:nth-child(2){animation-delay:.05s}.tab-panel.active>:nth-child(3){animation-delay:.1s}.tab-panel.active>:nth-child(4){animation-delay:.15s}.tab-panel.active>:nth-child(5){animation-delay:.2s}.tab-panel.active>:nth-child(n+6){animation-delay:.25s}
+.phase-card,.lab,.proj,.lib-item,.course,.stat,.rule{transition:transform .25s ease,border-color .25s,box-shadow .25s}
+.phase-card:hover,.lab:hover,.proj:hover,.lib-item:hover,.stat:hover,.rule:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,.25)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.stat{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}.stat b{display:block;font-size:28px;color:var(--accent);line-height:1.1}.stat span{color:var(--muted);font-size:13px}
+.hero h3,.rules-h{margin:26px 0 8px}
+.rule-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:12px 0}
+.rule{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}.rule h3{margin:0 0 6px}.rule ul{margin:0;color:var(--muted)}.rule li{margin:5px 0}.rule li b{color:var(--text)}
+.gate{border:1px solid var(--accent);border-radius:12px;padding:18px;background:var(--panel2);box-shadow:0 0 30px var(--glow)}.gate ol{margin:8px 0 0}.gate li{margin:6px 0}
+body[data-path="cloud"]{--accent:#2fd6c9;--accent2:#14a89d;--glow:rgba(47,214,201,.25);--line:#1b3a3a;--panel:#0b1514;--panel2:#101e1d}
+body[data-path="dfir"]{--accent:#b18cff;--accent2:#8a5cf0;--glow:rgba(177,140,255,.25);--line:#2e2547;--panel:#100c17;--panel2:#171122}
+body[data-path="cloud"] header{background:linear-gradient(135deg,rgba(8,30,29,.96),rgba(8,14,15,.94))}
+body[data-path="dfir"] header{background:linear-gradient(135deg,rgba(26,16,44,.96),rgba(13,9,19,.94))}
+.path-card.cloud{--accent:#2fd6c9}.path-card.dfir{--accent:#b18cff}
+
+h1 .accent{background:none;-webkit-background-clip:initial;background-clip:initial;color:var(--accent);animation:greenWhite 7s ease-in-out infinite}
+@keyframes greenWhite{0%,100%{color:var(--accent);text-shadow:0 0 16px var(--glow)}50%{color:#fff;text-shadow:0 0 28px rgba(255,255,255,.35)}}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--sb,#59f28d) transparent;scrollbar-gutter:stable}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb,#59f28d);opacity:.6;border-radius:99px;border:2px solid #070a0d;transition:background .3s}
+.tabs,.sidebar,.message-list{overscroll-behavior:contain}
+#scrollLine{position:fixed;top:0;left:0;right:0;height:3px;z-index:200;transform-origin:0 50%;transform:scaleX(0);background:var(--accent);box-shadow:0 0 10px var(--accent);transition:transform .18s ease-out;pointer-events:none}
+body[data-path="appsec"]{--accent:#ffb454;--accent2:#e08a1e;--glow:rgba(255,180,84,.25);--line:#3a2c17;--panel:#15100a;--panel2:#1d160d}
+body[data-path="grc"]{--accent:#ff7ad9;--accent2:#d94eb5;--glow:rgba(255,122,217,.25);--line:#3a1d33;--panel:#150c12;--panel2:#1e1119}
+body[data-path="appsec"] header{background:linear-gradient(135deg,rgba(38,26,8,.96),rgba(15,11,7,.94))}
+body[data-path="grc"] header{background:linear-gradient(135deg,rgba(38,12,32,.96),rgba(15,8,13,.94))}
+.path-card.appsec{--accent:#ffb454}.path-card.grc{--accent:#ff7ad9}
+body[data-path="red"]{--bg:#0d0709}body[data-path="blue"]{--bg:#060a11}body[data-path="cloud"]{--bg:#061110}body[data-path="dfir"]{--bg:#0b0812}body[data-path="appsec"]{--bg:#0e0a05}body[data-path="grc"]{--bg:#0e0710}
+::-webkit-scrollbar-thumb{border-color:var(--bg)}
+.mt14{margin-top:14px}.m0{margin:0}.mini-btn{padding:3px 9px;font-size:12px;margin:6px 6px 0 0}
+</style>
+</head>
+<body data-path="green">
+<div id="boot-screen" role="status" aria-label="Loading Cybex">
+  <div class="boot-terminal"><div class="boot-lock" id="bootLock" aria-hidden="true">🔒</div><div class="boot-title">CYBEX</div><div class="boot-bar"><i id="bootBar"></i></div><div class="boot-status" id="bootStatus">[ Secure boot ]</div></div>
+</div>
+<header>
+  <div class="badge">CYBEX // CYBERSECURITY</div>
+  <h1>Zero → <span class="accent">Cybersecurity</span></h1>
+  <p class="sub">A structured, ground-zero curriculum. Learn the foundations, practice safely, build projects, then specialize.</p>
+</header>
+
+<div class="topbar">
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="start">Home</button>
+    <button class="tab" data-tab="roadmap">Standard Roadmap</button>
+    <button class="tab" data-tab="specialize">Paths</button>
+    <button class="tab" data-tab="labs">Labs</button>
+    <button class="tab" data-tab="tools">Tools</button>
+    <button class="tab" data-tab="projects">Projects</button>
+    <button class="tab" data-tab="sources">Library</button>
+    <button class="tab" data-tab="rules">Rules</button>
+    <button class="tab" data-tab="community">Community</button>
+  </div>
+</div>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-title">Workspace</div>
+  <button class="side-link active" data-side="profile">Profile</button>
+  <button class="side-link" data-side="settings">Settings</button>
+  <button class="side-link" data-side="appearance">Appearance</button>
+  <button class="side-link" data-side="account">Account</button>
+  <div class="side-profile">
+    <div class="side-avatar" id="sideAvatar">G</div>
+    <div class="side-name" id="sideName">Guest</div>
+    <div class="side-meta">Local profile</div>
+  </div>
+</aside>
+
+<main>
+
+<section id="profile" class="tab-panel card profile-page" data-tab="profile">
+<h2>Profile</h2>
+<p class="note">Manage your local roadmap identity and progress. This is separate from the cybersecurity learning paths.</p>
+<div class="profile-head">
+  <div class="profile-avatar" id="profileAvatar">G</div>
+  <div><h2 id="profileDisplayName" class="m0">Guest</h2><p class="note" id="profileBioPreview">Cybersecurity learner</p></div>
+</div>
+<div class="profile-fields">
+  <div><label for="profileName">Display name</label><input id="profileName" value="Guest" maxlength="32"></div>
+  <div><label for="profileBio">Bio</label><input id="profileBio" value="Cybersecurity learner" maxlength="80"></div>
+  <div><label for="profilePfpFile">Profile picture</label><input id="profilePfpFile" type="file" accept="image/png,image/jpeg,image/webp"><button type="button" id="pfpClear" class="secondary mt14">Remove picture</button><p class="note">Pictures are resized to 128 px on your device and saved as a small image. Nothing is loaded from other websites, and photo metadata such as GPS location is removed.</p></div>
+</div>
+<div class="profile-actions">
+  <button id="saveProfile">Save Profile</button>
+  <button id="newProfile" class="secondary">New Profile</button>
+  <button id="exportBtn" class="secondary">Export Progress</button>
+  <button id="importBtn" class="secondary">Import Progress</button>
+  <input id="importFile" type="file" accept="application/json" hidden>
+</div>
+<p id="saveStatus" class="save-status">Saved locally</p>
+</section>
+
+<section id="settings" class="tab-panel card" data-tab="settings"><h2>Settings</h2><p class="note">Future settings will live here. The sidebar is designed to expand as the site grows.</p></section>
+<section id="appearance" class="tab-panel card" data-tab="appearance"><h2>Appearance</h2><p class="note">Future appearance controls will live here. Course themes remain controlled by the selected learning path.</p></section>
+<section id="account" class="tab-panel card" data-tab="account"><h2>Account</h2><p class="note">This site currently uses local browser profiles. Online accounts and cross-device syncing can be added later with authentication and a database.</p></section>
+
+<section id="start" class="tab-panel hero" data-tab="start">
+<h2>Home</h2>
+<p class="sub">Welcome to <b>Cybex</b>. A free, structured route from "what is a computer?" to a cybersecurity specialty, built for learners and curious people.</p>
+<div class="stat-row"><div class="stat"><b id="hs-p">0%</b><span>Roadmap done</span></div><div class="stat"><b id="hs-x">Not chosen</b><span>Your path</span></div><div class="stat"><b id="hs-j">0%</b><span>Projects done</span></div><div class="stat"><b id="hs-n">0</b><span>Items checked off</span></div></div>
+<h3>Where should you begin?</h3>
+<div class="lab-grid">
+<div class="lab"><span class="lvl">New to computers</span><p>Start at Phase 0 and work up. Skipping the foundations is the most common reason people get stuck later.</p><div class="links"><button data-go="roadmap">Open the roadmap</button></div></div>
+<div class="lab"><span class="lvl">Know the basics</span><p>Jump into guided labs, then come back and fill gaps as they show up.</p><div class="links"><button data-go="labs">Browse labs</button></div></div>
+<div class="lab"><span class="lvl">Ready to specialize</span><p>Pick a path: Red Team, Blue Team, Cloud Security or Digital Forensics. You can switch any time.</p><div class="links"><button data-go="specialize">Choose a path</button></div></div>
+</div>
+<h3>What you will be able to do</h3>
+<ul><li>Explain how computers, networks and operating systems fit together.</li><li>Work comfortably in Linux and understand Windows and Active Directory.</li><li>Write small scripts to automate boring work.</li><li>Practice safely and legally, and document what you did in a real report.</li><li>Build a portfolio you can show to someone hiring.</li></ul>
+<h3>A realistic weekly rhythm</h3>
+<table><tr><th>Time</th><th>What to do</th></tr><tr><td>3 sessions of 1 hour</td><td>Study one roadmap topic and take notes in your own words.</td></tr><tr><td>1 session of 2 hours</td><td>Do a lab that uses it.</td></tr><tr><td>30 minutes</td><td>Write up what you learned and tick off progress.</td></tr></table>
+<h3>Common questions</h3>
+<details class="mod"><summary>Do I need to know how to code first?</summary><div class="body"><p>No. Programming arrives in Phase 4, after the concepts that make it useful.</p></div></details>
+<details class="mod"><summary>How long does this take?</summary><div class="body"><p>Roughly six to twelve months at a few hours a week, depending on your starting point. Consistency beats speed.</p></div></details>
+<details class="mod"><summary>Is it legal to practice?</summary><div class="body"><p>Yes, on systems you own or platforms built for it. Read the Rules tab before you touch anything.</p></div></details>
+<details class="mod"><summary>Where is my progress stored?</summary><div class="body"><p>In this browser, per profile. Use Export Progress on the Profile page to keep a copy.</p></div></details>
+<div class="syncbox"><b>How Cybex works:</b> follow the Standard Roadmap, open a phase for its checklist, and your progress saves automatically. If a Cybex backend is configured, accounts, cross-device progress, profile search and private messaging also work.</div>
+</section>
+
+<section id="roadmap" class="tab-panel" data-tab="roadmap">
+<h2>Standard Roadmap</h2>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<p id="pct" class="note">0% complete</p>
+<p class="note">Open a phase for its full checklist, hands-on work, resources and checkpoint.</p>
+<div id="phaseGrid" class="phase-grid"></div>
+<div id="phaseView" class="phase-view"></div>
+
+<div class="phase"><h3>PHASE 0 — Computer Fundamentals</h3><span class="badge">~2–4 weeks</span>
+<p>Goal: understand what a computer actually does.</p>
+<div class="check"><input type=checkbox> Hardware: CPU, RAM, storage, motherboard, GPU, peripherals</div>
+<div class="check"><input type=checkbox> Binary, hexadecimal, bits/bytes, files and processes</div>
+<div class="check"><input type=checkbox> Operating systems, kernels, applications, drivers</div>
+<div class="check"><input type=checkbox> Filesystems, permissions, users and processes</div>
+<div class="check"><input type=checkbox> Virtualization and virtual machines</div>
+<p><b>Checkpoint:</b> explain what happens from pressing a power button to opening a web page.</p>
+</div>
+
+<div class="phase"><h3>PHASE 1 — Networking</h3><span class="badge">~3–6 weeks</span>
+<p>Goal: understand how machines communicate.</p>
+<div class="check"><input type=checkbox> OSI and TCP/IP models</div><div class="check"><input type=checkbox> Ethernet, MAC addresses, ARP</div>
+<div class="check"><input type=checkbox> IPv4/IPv6, subnetting, CIDR</div><div class="check"><input type=checkbox> TCP vs UDP, ports and sockets</div>
+<div class="check"><input type=checkbox> DNS, DHCP, HTTP/HTTPS, TLS</div><div class="check"><input type=checkbox> NAT, routing, firewalls, VPN concepts</div>
+<div class="check"><input type=checkbox> Read packet captures in Wireshark</div>
+<p><b>Checkpoint:</b> capture a DNS + HTTP/HTTPS conversation in your own lab and explain each major packet.</p>
+</div>
+
+<div class="phase"><h3>PHASE 2 — Linux</h3><span class="badge">~3–5 weeks</span>
+<p>Goal: become comfortable living in a terminal.</p>
+<div class="check"><input type=checkbox> Navigation, files, pipes, redirects and text processing</div><div class="check"><input type=checkbox> Users, groups, permissions and sudo</div>
+<div class="check"><input type=checkbox> Processes, services, logs and package management</div><div class="check"><input type=checkbox> SSH and basic networking commands</div>
+<div class="check"><input type=checkbox> Bash scripting fundamentals</div><div class="check"><input type=checkbox> Complete OverTheWire Bandit</div>
+<p><b>Checkpoint:</b> set up a Linux VM and administer it from the command line without relying on a GUI.</p>
+</div>
+
+<div class="phase"><h3>PHASE 3 — Windows + Active Directory</h3><span class="badge">~3–6 weeks</span>
+<p>Goal: understand the dominant enterprise endpoint environment.</p>
+<div class="check"><input type=checkbox> Windows architecture, users, groups and permissions</div><div class="check"><input type=checkbox> PowerShell basics</div>
+<div class="check"><input type=checkbox> Event Viewer, Windows logs and Defender concepts</div><div class="check"><input type=checkbox> Services, scheduled tasks and registry basics</div>
+<div class="check"><input type=checkbox> Active Directory: domain, DC, OU, GPO, Kerberos, LDAP</div>
+<p><b>Checkpoint:</b> explain how a domain login works and where an administrator would investigate suspicious activity.</p>
+</div>
+
+<div class="phase"><h3>PHASE 4 — Programming + Automation</h3><span class="badge">~4–8 weeks</span>
+<p>Goal: write small programs instead of depending on someone else's tool.</p>
+<div class="check"><input type=checkbox> Python syntax, variables, functions, loops and data structures</div><div class="check"><input type=checkbox> Files, JSON, exceptions and modules</div>
+<div class="check"><input type=checkbox> HTTP requests and APIs</div><div class="check"><input type=checkbox> Regular expressions and parsing</div>
+<div class="check"><input type=checkbox> Git: clone, branch, commit, diff, merge and push</div><div class="check"><input type=checkbox> Build 3 small security-related utilities for your own lab</div>
+<p><b>Checkpoint:</b> read unfamiliar Python and modify it safely.</p>
+</div>
+
+<div class="phase"><h3>PHASE 5 — Security Fundamentals</h3><span class="badge">~3–5 weeks</span>
+<p>Goal: learn the language and models used across security.</p>
+<div class="check"><input type=checkbox> CIA triad, assets, threats, vulnerabilities and risk</div><div class="check"><input type=checkbox> Authentication vs authorization</div>
+<div class="check"><input type=checkbox> Least privilege, defense in depth, zero trust</div><div class="check"><input type=checkbox> Hashing, encryption, digital signatures and PKI</div>
+<div class="check"><input type=checkbox> Vulnerability management and patching</div><div class="check"><input type=checkbox> Logging, monitoring, detection and incident response</div>
+<div class="check"><input type=checkbox> Read NIST CSF 2.0 at a high level</div>
+</div>
+
+<div class="phase"><h3>PHASE 6 — Hands-on Cybersecurity</h3><span class="badge">~6–10 weeks</span>
+<p>Goal: connect theory to controlled practice.</p>
+<div class="check"><input type=checkbox> Complete TryHackMe Pre Security</div><div class="check"><input type=checkbox> Complete TryHackMe Cyber Security 101</div>
+<div class="check"><input type=checkbox> Learn Nmap concepts in authorized labs</div><div class="check"><input type=checkbox> Learn Wireshark packet analysis</div>
+<div class="check"><input type=checkbox> Learn basic vulnerability assessment</div><div class="check"><input type=checkbox> Learn web security fundamentals with PortSwigger labs</div>
+<div class="check"><input type=checkbox> Write a report for every substantial lab</div>
+</div>
+
+<div class="phase"><h3>PHASE 7 — Choose a Specialization</h3><span class="badge">ongoing</span>
+<p>Do not pick based on a job title alone. Try each branch briefly.</p>
+<table><tr><th>Branch</th><th>Core skills</th><th>Next study</th></tr>
+<tr><td>Blue Team / SOC</td><td>Logs, SIEM, detection, Windows, networking, incident response</td><td>TryHackMe SOC Level 1 → detection/IR projects</td></tr>
+<tr><td>Penetration Testing</td><td>Networking, Linux, web, enumeration, scripting, reporting</td><td>TryHackMe Jr Penetration Tester → PortSwigger</td></tr>
+<tr><td>Web/AppSec</td><td>HTTP, JavaScript, SQL, authentication, APIs</td><td>PortSwigger Academy → OWASP WSTG</td></tr>
+<tr><td>Security Engineering</td><td>Networks, systems, cloud, identity, automation</td><td>Security engineering labs → cloud security</td></tr>
+<tr><td>DFIR</td><td>Windows/Linux artifacts, logs, timelines, evidence handling</td><td>Forensics labs → incident-response case reports</td></tr>
+<tr><td>Cloud Security</td><td>IAM, networking, containers, logging, cloud architecture</td><td>Learn one cloud deeply, then secure it</td></tr>
+</table>
+</div>
+<section class="card">
+<h2>Your first 7 days</h2>
+<table>
+<tr><th>Day</th><th>Task</th></tr>
+<tr><td>1</td><td>Learn CPU/RAM/storage, processes, filesystems and OS basics.</td></tr>
+<tr><td>2</td><td>Learn binary/hex and basic command-line navigation.</td></tr>
+<tr><td>3</td><td>Learn IP addresses, MAC addresses, ports and protocols.</td></tr>
+<tr><td>4</td><td>Learn DNS, DHCP, HTTP/HTTPS and TLS at a conceptual level.</td></tr>
+<tr><td>5</td><td>Start TryHackMe Pre Security.</td></tr>
+<tr><td>6</td><td>Set up a safe Linux VM/lab and practice terminal basics.</td></tr>
+<tr><td>7</td><td>Write one page explaining what you learned without copying definitions.</td></tr>
+</table>
+</section>
+</section>
+
+<section id="labs" class="tab-panel card" data-tab="labs">
+<h2>Labs</h2>
+<p class="sub">Practice only where you have permission: platforms built for learning, or machines you own.</p>
+<div class="warn"><b>Never scan or attack random public systems.</b> If a target is not a lab or yours, do not touch it.</div>
+<div class="lab-grid">
+<div class="lab"><span class="lvl">Start here</span><h3>TryHackMe</h3><p>Guided rooms in the browser with a built-in attack machine.</p><ul><li>Networking and Linux basics</li><li>Nmap, Wireshark, web basics</li></ul><div class="links"><a class="btn" href="https://tryhackme.com/path/outline/presecurity" target="_blank" rel="noopener noreferrer">Pre Security</a><a class="btn" href="https://tryhackme.com/path/outline/cybersecurity101" target="_blank" rel="noopener noreferrer">Cyber Security 101</a></div></div>
+<div class="lab"><span class="lvl">Phase 2</span><h3>OverTheWire Bandit</h3><p>Puzzle levels over SSH that teach the command line.</p><ul><li>Files, permissions, pipes</li><li>Finding and reading hidden data</li></ul><div class="links"><a class="btn" href="https://overthewire.org/wargames/bandit/" target="_blank" rel="noopener noreferrer">Bandit</a></div></div>
+<div class="lab"><span class="lvl">Phase 6</span><h3>PortSwigger Academy</h3><p>Free, in-browser labs for every major web vulnerability class.</p><ul><li>Injection, access control, auth</li><li>Read the fix after each solve</li></ul><div class="links"><a class="btn" href="https://portswigger.net/web-security" target="_blank" rel="noopener noreferrer">Web Security Academy</a></div></div>
+<div class="lab"><span class="lvl">Phase 6</span><h3>OWASP Juice Shop</h3><p>An intentionally insecure shop app you run on your own machine.</p><ul><li>Realistic modern web flaws</li><li>Built-in scoreboard</li></ul><div class="links"><a class="btn" href="https://owasp.org/www-project-juice-shop/" target="_blank" rel="noopener noreferrer">Project page</a></div></div>
+<div class="lab"><span class="lvl">Blue Team</span><h3>CyberDefenders</h3><p>Investigate realistic incidents using logs, pcaps and memory images.</p><ul><li>Alert triage and DFIR</li><li>Timeline writing</li></ul><div class="links"><a class="btn" href="https://cyberdefenders.org/" target="_blank" rel="noopener noreferrer">Open</a></div></div>
+<div class="lab"><span class="lvl">Build your own</span><h3>Home lab</h3><p>A few VMs on an isolated network you fully control.</p><ul><li>Linux, Windows and a domain controller</li><li>Snapshots make mistakes cheap</li></ul><div class="links"><a class="btn" href="https://www.virtualbox.org/" target="_blank" rel="noopener noreferrer">VirtualBox</a><a class="btn" href="https://academy.hackthebox.com/" target="_blank" rel="noopener noreferrer">HTB Academy</a></div></div>
+<div class="lab"><span class="lvl">Start here</span><h3>picoCTF</h3><p>Beginner-friendly capture-the-flag challenges with a permanent practice gym.</p><ul><li>Web, crypto, forensics basics</li><li>Hints available</li></ul><div class="links"><a class="btn" href="https://picoctf.org/" target="_blank" rel="noopener noreferrer">picoCTF</a></div></div><div class="lab"><span class="lvl">Phase 6</span><h3>DVWA</h3><p>A deliberately vulnerable web app you host yourself, with adjustable difficulty.</p><ul><li>Injection and XSS basics</li><li>Safe to break</li></ul><div class="links"><a class="btn" href="https://github.com/digininja/DVWA" target="_blank" rel="noopener noreferrer">GitHub</a></div></div><div class="lab"><span class="lvl">Phase 6</span><h3>VulnHub</h3><p>Downloadable vulnerable machines to run in your own isolated VM.</p><ul><li>Enumeration practice</li><li>Walkthrough-friendly</li></ul><div class="links"><a class="btn" href="https://www.vulnhub.com/" target="_blank" rel="noopener noreferrer">VulnHub</a></div></div><div class="lab"><span class="lvl">Blue Team</span><h3>LetsDefend</h3><p>Practice being a SOC analyst with simulated alerts and cases.</p><ul><li>Alert triage</li><li>Case writing</li></ul><div class="links"><a class="btn" href="https://letsdefend.io/" target="_blank" rel="noopener noreferrer">LetsDefend</a></div></div><div class="lab"><span class="lvl">Phase 5</span><h3>Cryptopals</h3><p>Crypto exercises that teach why bad designs fail.</p><ul><li>Encodings and ciphers</li><li>Needs Python</li></ul><div class="links"><a class="btn" href="https://cryptopals.com/" target="_blank" rel="noopener noreferrer">Cryptopals</a></div></div><div class="lab"><span class="lvl">Blue Team</span><h3>Atomic Red Team</h3><p>Run small technique tests in your lab and see which ones your detections catch.</p><ul><li>Purple teaming</li><li>Detection validation</li></ul><div class="links"><a class="btn" href="https://atomicredteam.io/" target="_blank" rel="noopener noreferrer">Atomic Red Team</a></div></div></div>
+</section>
+
+
+<section id="specialize" class="tab-panel card" data-tab="specialize">
+  <div class="section-kicker">SPECIALIZATION</div>
+  <h2>Choose your path</h2>
+  <p class="note">Pick a direction to load a dedicated color theme and course map. You can switch paths at any time.</p>
+  <div class="path-grid">
+    <button class="path-card red" data-path="red">
+      <span class="path-dot"></span><strong>RED TEAM</strong>
+      <small>Offensive security, web testing, enumeration, reporting and authorized labs.</small>
+    </button>
+    <button class="path-card blue" data-path="blue">
+      <span class="path-dot"></span><strong>BLUE TEAM</strong>
+      <small>Defensive security, SOC work, detection, logs, incident response and hardening.</small>
+    </button>
+  <button class="path-card cloud" data-path="cloud"><span class="path-dot"></span><strong>CLOUD SECURITY</strong><small>Identity, storage, logging, containers and securing what you run in the cloud.</small></button>
+    <button class="path-card dfir" data-path="dfir"><span class="path-dot"></span><strong>DIGITAL FORENSICS</strong><small>Evidence handling, disk and memory analysis, timelines and case reports.</small></button>
+    <button class="path-card appsec" data-path="appsec"><span class="path-dot"></span><strong>APPLICATION SECURITY</strong><small>Secure design and code, authentication, testing and DevSecOps.</small></button>
+    <button class="path-card grc" data-path="grc"><span class="path-dot"></span><strong>GOVERNANCE AND RISK</strong><small>Policies, risk registers, frameworks, compliance and audits.</small></button>
+  </div>
+
+  <div id="red-course" class="course-map"><h3>Red Team course map</h3><p class="note">Offensive skills for authorized labs only. Each module pairs an attacker idea with the defender's view.</p><div class="progress pathbar"><div class="bar" id="bar-r"></div></div><p class="note" id="pct-r"></p><div id="redMods"></div></div>
+  <div id="blue-course" class="course-map"><h3>Blue Team course map</h3><p class="note">Defensive skills you can practice in your own lab. Each module ends with what attackers do to get around it.</p><div class="progress pathbar"><div class="bar" id="bar-b"></div></div><p class="note" id="pct-b"></p><div id="blueMods"></div></div>
+  <div id="cloud-course" class="course-map"><h3>Cloud Security course map</h3><p class="note">Use a free-tier account with billing alerts on, and never test resources you do not own.</p><div class="progress pathbar"><div class="bar" id="bar-c"></div></div><p class="note" id="pct-c"></p><div id="cloudMods"></div></div>
+  <div id="dfir-course" class="course-map"><h3>Digital Forensics course map</h3><p class="note">Work on sample images and your own devices only. Evidence you did not collect lawfully is not yours to examine.</p><div class="progress pathbar"><div class="bar" id="bar-f"></div></div><p class="note" id="pct-f"></p><div id="dfirMods"></div></div>
+  <div id="appsec-course" class="course-map"><h3>Application Security course map</h3><p class="note">Learn to build software that resists attack. Test only apps you own or are cleared to test.</p><div class="progress pathbar"><div class="bar" id="bar-a"></div></div><p class="note" id="pct-a"></p><div id="appsecMods"></div></div>
+  <div id="grc-course" class="course-map"><h3>Governance and Risk course map</h3><p class="note">The path for people who make security a managed, measurable part of an organization.</p><div class="progress pathbar"><div class="bar" id="bar-g"></div></div><p class="note" id="pct-g"></p><div id="grcMods"></div></div>
+</section>
+
+<section id="tools" class="tab-panel card" data-tab="tools">
+<h2>Tools</h2>
+<p class="sub">The programs practitioners use, with a link to each project's official site.</p>
+<div class="warn"><b>Read before you install.</b> Many of these tools are dual-use, meaning they help defenders and attackers alike. Run them only against systems you own or have written permission to test, and preferably inside an isolated virtual machine. Download from the official site only, verify checksums or signatures when offered, and never run tools from unknown sources on your main computer.</div>
+<input id="toolSearch" class="lib-search" placeholder="Search tools" aria-label="Search tools" class="mt14">
+<div class="chips" id="toolChips"></div>
+<div class="lib-list" id="toolList"></div>
+</section>
+
+<section id="projects" class="tab-panel card" data-tab="projects">
+<h2>Portfolio projects</h2>
+<p class="sub">Thirteen projects that turn study into proof. Pick the ones that match your path, and start with the easy ones.</p>
+<div class="progress"><div class="bar" id="bar-j"></div></div><p class="note" id="pct-j"></p>
+<div class="proj-grid"><div class="proj" data-p="0"><span class="lvl">Easy</span><h3>Home lab diagram</h3><p>A diagram of your VMs, network segments and services, with a sentence on why each exists.</p><p class="note"><b>Time:</b> 1 weekend<br><b>Skills:</b> Documentation, networking</p><label><input type="checkbox" data-id="j0"> Mark complete</label></div><div class="proj" data-p="1"><span class="lvl">Easy</span><h3>Packet-analysis report</h3><p>A report explaining a sample capture: who talked to whom, what protocols, and anything unusual.</p><p class="note"><b>Time:</b> 1 weekend<br><b>Skills:</b> Wireshark, protocols</p><label><input type="checkbox" data-id="j1"> Mark complete</label></div><div class="proj" data-p="2"><span class="lvl">Medium</span><h3>Linux hardening report</h3><p>Before and after notes for a lab server with each change and why you made it.</p><p class="note"><b>Time:</b> 1 week<br><b>Skills:</b> Linux, permissions, SSH</p><label><input type="checkbox" data-id="j2"> Mark complete</label></div><div class="proj" data-p="3"><span class="lvl">Medium</span><h3>Windows investigation</h3><p>A timeline of a controlled scenario built from Windows logs, with evidence for each step.</p><p class="note"><b>Time:</b> 1 to 2 weeks<br><b>Skills:</b> Event logs, timelines</p><label><input type="checkbox" data-id="j3"> Mark complete</label></div><div class="proj" data-p="4"><span class="lvl">Medium</span><h3>Web-security report</h3><p>Ten PortSwigger labs written up as vulnerability, impact and remediation.</p><p class="note"><b>Time:</b> 2 weeks<br><b>Skills:</b> HTTP, web flaws, writing</p><label><input type="checkbox" data-id="j4"> Mark complete</label></div><div class="proj" data-p="5"><span class="lvl">Medium</span><h3>Python automation</h3><p>A benign log parser, indicator formatter or lab inventory tool with a README.</p><p class="note"><b>Time:</b> 2 weeks<br><b>Skills:</b> Python, parsing, Git</p><label><input type="checkbox" data-id="j5"> Mark complete</label></div><div class="proj" data-p="6"><span class="lvl">Hard</span><h3>Capstone lab</h3><p>A small isolated enterprise-style lab plus an assessment and remediation report.</p><p class="note"><b>Time:</b> 4 weeks<br><b>Skills:</b> Everything</p><label><input type="checkbox" data-id="j6"> Mark complete</label></div><div class="proj"><span class="lvl">Easy</span><h3>Account security audit</h3><p>Your own accounts checked for MFA, unique passwords and safe recovery options, with fixes applied.</p><p class="note"><b>Time:</b> 1 weekend<br><b>Skills:</b> MFA, passwords</p><label><input type="checkbox" data-id="j7"> Mark complete</label></div><div class="proj"><span class="lvl">Easy</span><h3>Phishing analysis report</h3><p>A sample phishing email analyzed: headers, links, indicators and recommended controls.</p><p class="note"><b>Time:</b> 1 weekend<br><b>Skills:</b> Email headers, indicators</p><label><input type="checkbox" data-id="j8"> Mark complete</label></div><div class="proj"><span class="lvl">Medium</span><h3>Threat model</h3><p>A data-flow diagram and ranked threat list for a small app, with mitigations.</p><p class="note"><b>Time:</b> 1 week<br><b>Skills:</b> STRIDE, diagrams</p><label><input type="checkbox" data-id="j9"> Mark complete</label></div><div class="proj"><span class="lvl">Medium</span><h3>Detection pack</h3><p>Three tested detections mapped to ATT&CK, with false-positive notes.</p><p class="note"><b>Time:</b> 2 weeks<br><b>Skills:</b> SIEM, Sigma, ATT&CK</p><label><input type="checkbox" data-id="j10"> Mark complete</label></div><div class="proj"><span class="lvl">Medium</span><h3>Cloud hardening</h3><p>A free-tier account secured with MFA, least-privilege roles, logging and private storage, with before and after.</p><p class="note"><b>Time:</b> 2 weeks<br><b>Skills:</b> IAM, logging, storage</p><label><input type="checkbox" data-id="j11"> Mark complete</label></div><div class="proj"><span class="lvl">Hard</span><h3>Forensic case report</h3><p>A report on a sample case covering evidence handling, timeline and findings.</p><p class="note"><b>Time:</b> 3 weeks<br><b>Skills:</b> Disk, memory, timelines</p><label><input type="checkbox" data-id="j12"> Mark complete</label></div></div>
+</section>
+
+<section id="sources" class="tab-panel card" data-tab="sources">
+<h2>Library</h2>
+<p class="sub">Places to return to when you don't know something. Books, references, frameworks, news and practice sites.</p>
+<input id="libSearch" class="lib-search" placeholder="Search the library" aria-label="Search the library">
+<div class="chips" id="libChips"></div>
+<div class="lib-list" id="libList"></div>
+</section>
+
+<section id="rules" class="tab-panel card" data-tab="rules">
+<h2>Rules and safety standards</h2>
+<p class="sub">These skills are powerful. Use them only where you have permission, and leave every system as you found it.</p>
+<div class="gate"><b>Ask these three questions before every action</b><ol><li>Do I own this system, or do I have written permission to test it?</li><li>Is this exact action inside the agreed scope and time window?</li><li>Could it expose data or interrupt a service?</li></ol><p class="note">If any answer is no or unclear, stop and get the scope confirmed first.</p></div>
+<div class="rule-grid">
+<div class="rule"><h3>Permission</h3><ul><li><b>Public is not permission.</b> A reachable website is not an invitation to test it.</li><li>Get scope in writing: targets, methods, dates, and who to contact.</li><li>Follow each platform's rules, including CTFs and bug bounties.</li></ul></div>
+<div class="rule"><h3>Data</h3><ul><li>Never use credentials that are not yours.</li><li>Do not copy, keep or publish private data you come across.</li><li>Treat sensitive data in a lab as real and follow the lab's rules.</li></ul></div>
+<div class="rule"><h3>Impact</h3><ul><li>Use the least disruptive method that answers the question.</li><li>Avoid actions that delete data, lock accounts or flood a service.</li><li>Do not bypass a safety control just to see if it works.</li></ul></div>
+<div class="rule"><h3>Practice</h3><ul><li>Prefer CTFs, training platforms and VMs you own.</li><li>Keep notes: commands, observations and results.</li><li>For every attack you study, learn how it is detected and fixed.</li></ul></div>
+</div>
+<h3 class="rules-h">If something goes wrong</h3>
+<ol><li><b>Stop.</b> Do not try to undo it with more testing.</li><li><b>Write down</b> what you did, when, and what you saw.</li><li><b>Tell</b> the lab owner or the contact in your scope document.</li><li><b>Follow</b> their reporting process and share only safe evidence.</li></ol>
+<p class="note">Computer misuse laws, such as the CFAA in the United States and the Computer Misuse Act in the UK, apply even when you mean well. This page is guidance for learners, not legal advice.</p>
+</section>
+
+<section id="community" class="tab-panel" data-tab="community">
+<h2>Community</h2>
+<p class="note">Search public Cybex profiles and send private messages when an online backend is connected. In local-only mode, you can still search profiles stored in this browser.</p>
+<div class="auth-grid">
+  <div class="card">
+    <h3>Account</h3>
+    <div class="form-grid">
+      <input id="authUsername" maxlength="24" placeholder="Username">
+      <input id="authDisplay" maxlength="32" placeholder="Display name (register only)">
+      <input id="authPassword" type="password" autocomplete="current-password" maxlength="128" placeholder="Password (10+ characters)">
+      <input id="authBio" maxlength="160" placeholder="Bio (register only)">
+      <label for="authPfpFile" class="note">Profile picture (optional, stays on this device unless you register)</label><input id="authPfpFile" type="file" accept="image/png,image/jpeg,image/webp">
+      <div class="check"><input type="checkbox" id="authDiscover"> Let other learners find me in search (shows display name, bio, picture and progress %)</div>
+      <div class="profile-actions"><button id="registerBtn">Create account</button><button id="loginBtn" class="secondary">Log in</button><button id="logoutBtn" class="secondary">Log out</button><button id="deleteAccount" class="secondary">Delete server account</button></div>
+    </div>
+    <div id="authStatus" class="status">Local-only mode until an API endpoint is configured.</div>
+  </div>
+  <div class="card">
+    <h3>Search profiles</h3>
+    <div class="form-grid"><input id="userSearch" maxlength="40" placeholder="Search username, name or bio"><button id="searchUsers">Search</button></div>
+    <div id="userResults" class="community-results"></div>
+  </div>
+</div>
+<div class="card mt14">
+  <h3>Private messages</h3>
+  <div class="form-grid"><input id="messageTo" maxlength="24" placeholder="Recipient username"><textarea id="messageBody" maxlength="1000" placeholder="Write a message"></textarea><button id="sendMessage">Send message</button></div>
+  <div id="messageStatus" class="status"></div><div id="messageList" class="message-list"></div><div id="blockedList" class="note"></div>
+</div>
+<div class="offline-note"><b>Safety:</b> Do not share your address, phone number, passwords, school details, financial information, or other sensitive personal information. Use blocking/reporting controls on any future public deployment.</div>
+</section>
+
+
+
+
+<div class="syncbox"><b>Progress storage:</b> your profile and checklist progress are saved locally in this browser. Export/import can move progress between devices.</div>
+</main></div>
+<footer>Cybex Cybersecurity Roadmap • Multi-profile local progress • Built as a living curriculum</footer>
+<script src="./cybex-config.js"></script>
+<script>
+/*
+  Cybex works in two modes:
+  1) GitHub Pages / static mode: local profiles + local progress.
+  2) Backend mode: set CYBEX_API_BASE to your HTTPS API URL. The same HTML can then use accounts, server progress, profile search and messaging.
+*/
+window.CYBEX_API_BASE = window.CYBEX_API_BASE || "";
+const API_RAW = String(window.CYBEX_API_BASE || "").replace(/\/$/, "");
+const API_BASE = (()=>{if(!API_RAW)return "";try{const u=new URL(API_RAW);if(u.username||u.password||u.search||u.hash)return "";return (u.protocol==="https:"||(u.protocol==="http:"&&/^(localhost|127\.0\.0\.1)$/.test(u.hostname)))?API_RAW:""}catch{return ""}})();
+if(API_RAW&&!API_BASE)console.warn("Cybex: CYBEX_API_BASE must be an https URL. Backend mode is disabled.");
+const STORAGE_KEY="cybexCyberV4";
+let state={};
+try{
+  const raw=localStorage.getItem(STORAGE_KEY);
+  state=raw?JSON.parse(raw):{};
+  if(!state || typeof state!=="object" || Array.isArray(state)) state={};
+}catch{state={};}
+state.profiles=state.profiles||{};
+state.current=state.current||"Guest";
+state.selectedPath=state.selectedPath||"green";
+state.api={csrf:"",user:null,pv:null,prev:null};
+const PFP_RE=/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/]{20,60000}={0,2}$/;
+const safePfp=v=>{v=String(v||"");return PFP_RE.test(v)?v:""};
+const CHK_RE=/^[pjrbcfag]\d{1,2}-\d{1,3}$/;
+function cleanChecks(o){const r={};if(!o||typeof o!=="object"||Array.isArray(o))return r;let n=0;for(const k of Object.keys(o)){if(CHK_RE.test(k)&&n<600){r[k]=o[k]===true;n++}}return r}
+const BADN=/^(__proto__|constructor|prototype|hasOwnProperty|toString|valueOf)$/;
+if(typeof state.profiles!=="object"||Array.isArray(state.profiles))state.profiles={};
+for(const k of Object.keys(state.profiles)){let p=state.profiles[k];if(BADN.test(k)||k[0]==="@"){delete state.profiles[k];continue}if(!p||typeof p!=="object"||Array.isArray(p))p=state.profiles[k]={};if(!p.checks||typeof p.checks!=="object"||Array.isArray(p.checks))p.checks={};p.bio=String(p.bio||"Cybersecurity learner").slice(0,160);p.pfp=safePfp(p.pfp)}
+state.blocked=Array.isArray(state.blocked)?state.blocked.map(x=>String(x).toLowerCase()).filter(x=>/^[a-z0-9_]{3,24}$/.test(x)).slice(0,200):[];
+state.current=String(state.current||"Guest").slice(0,32);if(BADN.test(state.current)||state.current[0]==="@")state.current="Guest";if(!state.profiles[state.current])state.profiles[state.current]={checks:{},bio:"Cybersecurity learner",pfp:""};
+const VP=["red","blue","cloud","dfir","appsec","grc"];
+const HP=(location.hash||"").slice(1).split("~");let WN={};try{if((window.name||"").startsWith("cybex:"))WN=JSON.parse(window.name.slice(6))||{}}catch{}
+if(VP.includes(HP[1]))state.selectedPath=HP[1];
+else if(!VP.includes(state.selectedPath))state.selectedPath=VP.includes(WN.p)?WN.p:"green";
+function syncLoc(tab){try{history.replaceState(null,"","#"+tab+(VP.includes(state.selectedPath)?"~"+state.selectedPath:""))}catch{}try{window.name="cybex:"+JSON.stringify({p:state.selectedPath,t:tab})}catch{}}
+
+function getProfile(){
+  if(!state.profiles[state.current]) state.profiles[state.current]={checks:{},bio:"Cybersecurity learner",pfp:""};
+  return state.profiles[state.current];
+}
+function save(){let ok=true;try{localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},state,{api:undefined})))}catch{ok=false} const el=document.getElementById("saveStatus"); if(el) el.textContent=ok?"Saved locally • "+new Date().toLocaleTimeString():"Could not save: browser storage is blocked or full. Use Export Progress to keep a copy.";}
+function escapeHTML(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+
+function applyThemeForTab(tabName, animate=true){
+  const path=tabName==="start"?"green":(PATHS.includes(state.selectedPath)?state.selectedPath:"green");
+  animate=animate||document.body.dataset.path!==path;if(animate) document.body.classList.add("path-changing");
+  document.body.dataset.path=path;document.documentElement.style.setProperty("--sb",getComputedStyle(document.body).getPropertyValue("--accent").trim()||"#59f28d");
+  if(animate) setTimeout(()=>document.body.classList.remove("path-changing"),650);
+  document.querySelectorAll(".path-card").forEach(b=>b.classList.toggle("selected",b.dataset.path===state.selectedPath));
+}
+function setPath(path){
+  if(!PATHS.includes(path)) return;
+  state.selectedPath=path; save(); syncLoc(currentTab());
+  applyThemeForTab(currentTab(),true);
+  PATHS.forEach(p=>document.getElementById(p+"-course")?.classList.toggle("active",p===path));
+  
+}
+function currentTab(){return document.querySelector(".tab.active")?.dataset.tab||"start";}
+function activateTab(tabName){
+  const panel=document.querySelector(`.tab-panel[data-tab="${tabName}"]`); if(!panel) return;
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active")); panel.classList.add("active");
+  document.querySelectorAll(".tab").forEach(b=>{b.classList.toggle("active",b.dataset.tab===tabName);b.setAttribute("aria-selected",b.dataset.tab===tabName)});
+  document.querySelectorAll(".side-link").forEach(b=>b.classList.toggle("active",b.dataset.side===tabName));
+  syncLoc(tabName);if(state.lastTab!==tabName){state.lastTab=tabName;save()} applyThemeForTab(tabName,false);
+  if(tabName==="community") refreshMessages();
+}
+
+const PATHS=["red","blue","cloud","dfir","appsec","grc"];
+const PID={r:"red",b:"blue",c:"cloud",f:"dfir",a:"appsec",g:"grc"};
+let phases=[];
+const DEEP=[
+{c:["Explain fetch, decode, execute for one CPU instruction","Convert between binary, decimal and hex by hand","Watch processes and memory live in Task Manager or top","Snapshot a VM before and after a change and compare"],x:["Install two operating systems in VMs and compare their folder layouts","Trace what happens when you type a URL, then check it against a diagram"],r:[["CS50 lectures","https://cs50.harvard.edu/x/"],["Professor Messer","https://www.professormesser.com/"]]},
+{c:["Subnet a /24 into four networks on paper","Explain the TCP three-way handshake and what a RST means","Follow one DNS lookup from resolver to authoritative server","Filter a capture by protocol, host and port in Wireshark","Explain how a VPN changes the path of your traffic"],x:["Build a two-VM network with a router and ping across it","Capture a login over HTTP and over HTTPS and note what is visible in each"],r:[["Wireshark User's Guide","https://www.wireshark.org/docs/wsug_html/"],["TryHackMe Pre Security","https://tryhackme.com/path/outline/presecurity"]]},
+{c:["Chain grep, sort, uniq and awk to summarize a log file","Read and set permissions with chmod and chown, including octal","Write a systemd service and read its logs with journalctl","Harden SSH: key auth and no root login","Write a Bash script with arguments, loops and exit codes"],x:["Finish Bandit levels 0 to 20 and keep a notes file of what each taught","Set up a cron job that rotates and compresses a log"],r:[["Linux Journey","https://linuxjourney.com/"],["OverTheWire Bandit","https://overthewire.org/wargames/bandit/"]]},
+{c:["Explain NTLM vs Kerberos at a high level","Create users, groups and a GPO in a Windows Server lab","Query the registry and services with PowerShell","Find failed and successful logons in Event Viewer (4624, 4625)","Explain what Sysmon adds beyond default logging"],x:["Build a small AD domain with one DC and one joined client","Write a PowerShell script that lists local admins on every lab host"],r:[["Windows security docs","https://learn.microsoft.com/en-us/windows/security/"],["PowerShell docs","https://learn.microsoft.com/en-us/powershell/"]]},
+{c:["Write a function with tests that pass and fail on purpose","Parse a log file into JSON and count events per host","Call a public API with requests and handle errors and timeouts","Use a virtual environment and pin dependencies","Review your own diff before every commit"],x:["Build a log parser that flags repeated failed logins in a sample file","Write a tool that hashes a folder and reports changed files"],r:[["Python tutorial","https://docs.python.org/3/tutorial/"],["Pro Git","https://git-scm.com/book/en/v2"]]},
+{c:["Explain symmetric vs asymmetric encryption and where each is used","Explain why passwords are salted and slow-hashed","Walk through a TLS handshake step by step","Map one real breach to the controls that would have stopped it","Write a simple risk register with likelihood and impact"],x:["Threat-model a login form using STRIDE","Turn on MFA for your own accounts and write what each factor protects"],r:[["NIST CSF","https://www.nist.gov/cyberframework"],["MITRE ATT&CK","https://attack.mitre.org/"]],k:"draw a small company network and label its trust boundaries, key assets and three controls."},
+{c:["Explain what each Nmap scan type sends, using your own lab","Solve 10 PortSwigger labs and write a report for each","Rebuild a TryHackMe room from your notes alone","Triage a sample phishing email and list its indicators","Scan your own lab for vulnerabilities and rank the findings by risk"],x:["Write a full report: scope, method, findings, impact, fix","Repeat one lab without hints to see what stuck"],r:[["PortSwigger Academy","https://portswigger.net/web-security"],["OWASP WSTG","https://owasp.org/projects/web-security-testing-guide"]],k:"a friend reproduces your finding using only your report."},
+{c:["Spend one week on each branch and rate how much you enjoyed it","Write a 90-day plan for your chosen branch with weekly goals","Check job listings before choosing a first certification"],x:["Talk to two people who work in different branches","Build one portfolio project that fits your chosen branch"],r:[["Hack The Box Academy","https://academy.hackthebox.com/"],["CIS Benchmarks","https://www.cisecurity.org/cis-benchmarks"]],k:"you can explain why you chose your branch and what you will stop doing to make room for it."}];
+const MODS={r:[
+{t:"Recon and enumeration",g:"Learn what a target exposes before touching anything, and how to record it.",k:["Write a scope and rules-of-engagement note for your own lab","Compare passive and active recon and what each leaves in logs","Read service, version and port output from Nmap on your lab hosts","Enumerate DNS records and web paths on a practice target you own","Keep a host inventory with evidence for every entry"],l:"TryHackMe Nmap room and your own two-VM lab.",c:"Produce a host inventory of your lab that another person can verify.",d:"Scans show up as bursts of connection attempts in firewall and IDS logs. Find yours."},
+{t:"Linux and tooling",g:"Understand the privilege model and use tools you can explain.",k:["Explain SUID, sudo rules, cron and writable services as privilege boundaries","Read an enumeration script's output and say what each section means","Read a tool's man page before running it","Keep structured notes: command, purpose, result","Explain how permissions and ownership allow or stop access"],l:"TryHackMe Linux Fundamentals and OverTheWire Bandit.",c:"Explain why a deliberately misconfigured lab service is exploitable and how to fix it.",d:"auditd and auth.log record sudo use and privilege changes."},
+{t:"Web security",g:"Learn how web apps break and how the fixes work.",k:["Trace requests in Burp Suite against a lab app","Explain injection, broken access control, XSS and SSRF in your own words","Solve PortSwigger labs for each topic in order","Explain how sessions, cookies and tokens work","Test OWASP Juice Shop running locally in a container"],l:"PortSwigger Web Security Academy and OWASP Juice Shop.",c:"Write up 10 labs with vulnerability, impact and remediation for each.",d:"Web server and WAF logs show odd parameters, repeated errors and unusual user agents."},
+{t:"Windows and Active Directory",g:"Understand how enterprise identity creates attack paths.",k:["Build a lab domain with a DC, a client and a low-privilege user","Explain Kerberos tickets and NTLM at a high level","Explain how delegation, group nesting and over-privileged accounts create attack paths","Read an attack-path graph and name the weakest link to fix","Explain what tiered administration prevents"],l:"Your own AD lab on Windows Server evaluation VMs.",c:"Document one lab misconfiguration, how it is abused in theory, and the fix.",d:"Events 4624, 4625, 4768, 4769 and 4672 show logons, tickets and privileged sessions."},
+{t:"Scripting and automation",g:"Write small tools you understand end to end.",k:["Write a port checker with sockets for your own lab","Parse Nmap XML output into a clean table","Wrap an HTTP call with retries and rate limiting","Add logging and a dry-run flag to every tool","Publish one tool with a README and a scope warning"],l:"Extend your Phase 4 utilities.",c:"Another learner can run your tool safely from the README alone.",d:"Rate limits and tool user agents make automated traffic easy to spot."},
+{t:"Reporting and professionalism",g:"The report is the product. Findings that are not understood do not get fixed.",k:["Write an executive summary a manager can act on","Rate findings with CVSS and explain your reasoning","Give exact reproduction steps with screenshots","Name the specific control to change in each remediation","Retest after a fix and record the result"],l:"Turn your best lab into a full report.",c:"A stranger reproduces and fixes your finding using only your report.",d:"Defenders use your report to write detections and prioritize patches. Certifications to consider later: eJPT, PNPT, then OSCP."}],
+b:[
+{t:"Systems and identity",g:"Know what normal looks like before you hunt for abnormal.",k:["Baseline a clean Windows and Linux VM: users, services, open ports","Explain the AD logon flow and where it logs","Enable MFA and explain phishing-resistant options","Separate admin and daily-use accounts in your lab","Review group membership for excess privilege"],l:"Your Phase 3 AD lab.",c:"Produce a baseline document you can diff against a changed system.",a:"Attackers go for identity first: stolen passwords and over-privileged groups."},
+{t:"Logs and telemetry",g:"You can only detect what you collect.",k:["Map key Windows events: 4624, 4625, 4688, 4720, 7045","Install Sysmon with a public config and read its events","Read /var/log/auth.log and journald for logins and sudo","Summarize a pcap with Wireshark and Zeek logs","Explain how logs travel from host to central store and where they can be lost"],l:"TryHackMe Windows event log and Sysmon rooms.",c:"Reconstruct a lab user's session from logs alone.",a:"Attackers clear logs and disable agents. Alert when logging stops."},
+{t:"Detection engineering",g:"Turn behavior into alerts you can trust.",k:["Stand up Wazuh or Elastic in your lab and ingest two hosts","Write five searches for failed logons, new services and odd process parents","Write a Sigma rule and convert it for your SIEM","Map each detection to a MITRE ATT&CK technique","Tune a noisy rule and record the false-positive rate before and after"],l:"Wazuh or Elastic Security in your lab.",c:"Ship three tested detections with a note on what each catches and misses.",a:"Every rule has blind spots. List the ways an attacker could slip past yours."},
+{t:"Triage and threat intel",g:"Decide fast whether an alert matters.",k:["Follow a written triage workflow on a sample alert","Explain IOCs vs TTPs and why TTPs last longer","Look up a hash, IP and domain and judge the results","Analyze a phishing email's headers, links and attachment in a sandbox","Write a ticket another analyst can act on"],l:"TryHackMe SOC Level 1 path.",c:"Triage ten sample alerts and justify true or false positive for each.",a:"Attackers reuse infrastructure, so pivoting on one indicator often reveals more."},
+{t:"Incident response and DFIR",g:"Contain, understand, recover, and learn.",k:["Explain the NIST SP 800-61 incident response lifecycle","Write a playbook for phishing and one for ransomware","Build an event timeline from mixed log sources","Explain chain of custody and why evidence order matters","Hold a blameless review and list follow-ups"],l:"A tabletop exercise with a friend and a sample case.",c:"Deliver an incident report with timeline, scope, root cause and fixes.",a:"Attackers try to persist. Check scheduled tasks, services, run keys and new accounts."},
+{t:"Hardening and resilience",g:"Reduce what can go wrong, then prove it.",k:["Apply a CIS Benchmark to a lab system and record each change","Set up patching and backup checks, then test a restore","Segment your lab network and confirm blocked paths","Replay a few Atomic Red Team tests in your lab to check detections","Track remaining gaps in a simple risk register"],l:"CIS Benchmarks plus Atomic Red Team in an isolated lab.",c:"Show a before-and-after report where a change closes a gap and a detection proves it.",a:"Purple teaming: the red side's tests show which alerts you are missing."}]};
+MODS.c=[
+{t:"Cloud foundations",g:"Know what the provider secures and what you must.",k:["Explain the shared responsibility model for IaaS, PaaS and SaaS","Create a free-tier account with MFA and a billing alert","Explain regions, accounts and organizations","Describe how virtual networks, subnets and security groups relate"],l:"Free tier of one provider, budget alerts on.",c:"Draw a small cloud architecture and mark who secures each layer.",d:"Skipping billing alerts. A leaked key can cost real money fast."},
+{t:"Identity and access",g:"Most cloud breaches start with an identity.",k:["Explain users, roles, policies and least privilege","Explain why long-lived access keys are risky","Write a policy that allows one action on one resource","List which identities can reach your most sensitive data"],l:"Build roles and policies in your free-tier account.",c:"Audit an account and list every over-permissive identity.",d:"Wildcard permissions granted just to make something work."},
+{t:"Network and data protection",g:"Keep data private by default.",k:["Make a storage bucket private and verify it","Explain encryption at rest and in transit and who holds the keys","Use a secrets manager instead of keys in code","Restrict inbound rules to the minimum needed"],l:"Deploy a small web app with a database in your lab account.",c:"Prove nothing is publicly reachable by mistake.",d:"Public buckets and open management ports."},
+{t:"Logging and detection",g:"You cannot investigate what you did not record.",k:["Turn on audit logging for account activity","Send logs to a separate, locked-down account","Alert on root usage and policy changes","Explain what a cloud posture tool checks"],l:"Enable the provider's audit and threat-detection services.",c:"Make a harmless change in your lab and find it in the logs.",d:"Keeping logs in the same account an attacker controls."},
+{t:"Containers and infrastructure as code",g:"Secure what you build before it runs.",k:["Explain images and containers and what isolation they do and do not give","Scan an image for known vulnerabilities","Write infrastructure as code and review it for risky defaults","Explain what admission controls do in Kubernetes"],l:"Run a container locally, then define a small stack as code.",c:"Fix three findings in a scanned image or template and document them.",d:"Running containers as root and pulling unpinned images."},
+{t:"Governance and response",g:"Make security repeatable and know who to call.",k:["Map controls to CIS or NIST CSF","Write a playbook for a leaked access key","Practice revoking keys and rotating secrets","Tag resources by owner and data sensitivity"],l:"Tabletop a leaked-credentials incident.",c:"Deliver a playbook a teammate could follow at 3 a.m.",d:"No owner tagged, so nobody knows who to call."}];
+MODS.f=[
+{t:"Forensic principles",g:"How you collect evidence decides whether it can be trusted.",k:["Explain order of volatility and what to collect first","Explain chain of custody and fill in a sample form","Explain why you work on copies or read-only mounts","Hash evidence and verify the hash after copying"],l:"Image a small USB stick you own.",c:"Acquire an image and prove it is an exact copy.",d:"Working on the original evidence instead of a copy."},
+{t:"Disk and filesystem artifacts",g:"Storage keeps more than people expect.",k:["Explain filesystems, deleted files and slack space","Open a disk image in Autopsy and browse it","Recover a deleted file from a test image","Explain modified, accessed, changed and created timestamps"],l:"A sample image in Autopsy.",c:"Answer five questions about a sample image and cite the evidence.",d:"Trusting one timestamp without a second source."},
+{t:"Windows artifacts",g:"Windows records a lot about what users and programs did.",k:["Locate and explain the registry hives","Explain Prefetch, Amcache and Shimcache as evidence of execution","Read event logs for logons, services and PowerShell","Explain browser history and recent-file artifacts"],l:"Use a Windows VM, then examine it.",c:"Show from artifacts alone what a test user ran and when.",d:"Assuming an artifact proves execution when it may only show presence."},
+{t:"Memory forensics",g:"Some evidence only exists while the machine is running.",k:["Explain what lives only in RAM","Capture memory from a lab VM","Use Volatility to list processes and network connections","Spot a process with an odd parent or path"],l:"Volatility on a public sample memory image.",c:"Identify the suspicious process in a sample and explain why.",d:"Powering the machine off before capturing memory."},
+{t:"Network and log forensics",g:"Connect what happened across many systems.",k:["Correlate firewall, proxy and DNS logs","Extract conversations from a pcap","Normalize time zones across sources","Build an indicator list from your findings"],l:"Wireshark and Zeek on a sample capture.",c:"Explain one incident's network story from logs only.",d:"Mixing time zones and ignoring clock drift."},
+{t:"Timelines and reporting",g:"A finding nobody can reproduce is just an opinion.",k:["Build a timeline from several sources","Separate facts, inferences and open questions","Write findings a non-technical reader can follow","Keep an audit trail of every action you took"],l:"Turn a full sample case into a report.",c:"Hand over a report another examiner can reproduce step by step.",d:"Stating a guess as if it were proven."}];
+MODS.a=[{t:"Secure design",g:"Fix problems on the whiteboard, where they are cheapest.",k:["Draw a data-flow diagram with trust boundaries", "Run STRIDE on one feature", "Choose secure defaults and explain them", "Classify the data your app handles"],l:"Threat-model a small app you built.",c:"Ranked threat list with a mitigation for each.",d:"Adding security after launch instead of at design time."},
+{t:"Secure coding",g:"Handle untrusted input safely, everywhere.",k:["Validate input by allow-list on server side", "Use parameterized queries and explain why", "Encode output for its context", "Return errors that help users without leaking internals"],l:"OWASP Juice Shop or your own app.",c:"Fix three injection or XSS bugs and explain each fix.",d:"Trusting client-side validation."},
+{t:"Authentication and access control",g:"Prove who users are and limit what they can do.",k:["Store passwords with a slow salted hash", "Add MFA to a sample app", "Manage sessions: expiry, rotation, secure cookie flags", "Enforce access control on the server for every request"],l:"Add login to a small app.",c:"Show that one user cannot read another user's data.",d:"Checking permissions only in the interface."},
+{t:"Testing",g:"Find flaws with tools and with review.",k:["Run a static analyzer such as Semgrep or Bandit", "Run OWASP ZAP against your own app", "Use a code review checklist on a real pull request", "Triage findings into real and false positives"],l:"Scan your own project.",c:"Report the top five findings with fixes.",d:"Treating scanner output as ground truth."},
+{t:"APIs and supply chain",g:"Your code is mostly other people's code.",k:["Authenticate and rate-limit an API", "Pin and update dependencies", "Scan dependencies for known vulnerabilities", "Find leaked secrets in a repo with Gitleaks"],l:"Audit a repo you own.",c:"Remove every secret and outdated dependency you find.",d:"Committing keys to source control."},
+{t:"DevSecOps",g:"Make the safe way the easy way.",k:["Add a security scan to a CI pipeline", "Scan a container image before deploy", "Write a vulnerability triage policy", "Explain what a security champion does"],l:"A small CI pipeline on your own repo.",c:"A pipeline that fails on serious findings.",d:"Gates so noisy the team turns them off."}];
+MODS.g=[{t:"Governance foundations",g:"Understand the documents and roles behind security.",k:["Explain policy, standard, procedure and guideline", "Draft a one-page acceptable use policy", "Explain roles such as CISO, data owner and auditor", "Explain how security supports business goals"],l:"Write policies for an imaginary company.",c:"A short policy set another person can follow.",d:"Writing policies nobody can follow."},
+{t:"Risk management",g:"Decide what to fix first, and why.",k:["Build a risk register with likelihood and impact", "Explain accept, reduce, transfer and avoid", "Explain risk appetite", "Score five risks and defend the scores"],l:"Assess your home lab as if it were a business.",c:"A ranked register with treatments.",d:"Scoring risks on gut feeling with no evidence."},
+{t:"Frameworks and controls",g:"Use shared language instead of inventing your own.",k:["Explain NIST CSF functions", "Read the outline of ISO 27001", "Explain CIS Controls and how they are prioritized", "Explain what a SOC 2 report covers"],l:"Map your lab's controls to one framework.",c:"A control-mapping table with gaps.",d:"Treating a framework as a checklist to complete."},
+{t:"Compliance and privacy",g:"Know which rules apply to which data.",k:["Explain GDPR principles in plain language", "Explain what HIPAA and PCI DSS protect", "Build a data inventory for a sample app", "Write a retention rule and explain it"],l:"Data-map a small app.",c:"A data inventory with owners and retention.",d:"Collecting data you have no reason to keep."},
+{t:"Audit and evidence",g:"Show that controls work, not just exist.",k:["Explain how a control is tested", "Collect evidence with dates and sources", "Write an audit finding with cause and fix", "Track remediation to closure"],l:"Test three controls in your lab.",c:"An audit report with evidence for each control.",d:"Evidence that is screenshots without dates."},
+{t:"People and third parties",g:"Most risk arrives through people and vendors.",k:["Design a short security awareness session", "Explain third-party risk questionnaires", "Write an incident communication plan", "Explain business continuity and recovery goals"],l:"Assess an imaginary vendor.",c:"A vendor risk summary with a recommendation.",d:"Assuming a vendor's security is the vendor's problem alone."}];
+function modHTML(p,list){return list.map((m,n)=>`<details class="mod"><summary><span>${n+1}. ${m.t}</span><span class="tag"></span></summary><div class="body"><p class="note">${m.g}</p>${m.k.map((t,j)=>`<div class="check"><input type="checkbox" data-id="${p}${n}-${j}"> ${t}</div>`).join("")}<p><b>Lab:</b> ${m.l}</p><p><b>Checkpoint:</b> ${m.c}</p><p><b>${({r:"Defender's view",b:"Attacker's view"})[p]||"Common mistake"}:</b> ${m.d||m.a}</p></div></details>`).join("")}
+function buildPaths(){
+  document.getElementById("redMods").innerHTML=modHTML("r",MODS.r);document.getElementById("blueMods").innerHTML=modHTML("b",MODS.b);document.getElementById("cloudMods").innerHTML=modHTML("c",MODS.c);document.getElementById("dfirMods").innerHTML=modHTML("f",MODS.f);document.getElementById("appsecMods").innerHTML=modHTML("a",MODS.a);document.getElementById("grcMods").innerHTML=modHTML("g",MODS.g);
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("role","tab"));
+  document.getElementById(state.selectedPath+"-course")?.classList.add("active");
+  document.querySelectorAll(".path-card").forEach(b=>b.classList.toggle("selected",b.dataset.path===state.selectedPath));
+}
+function enrich(ph,i){const d=DEEP[i];if(!d)return;const n=ph.querySelectorAll(".check").length,el=document.createElement("div");el.className="deep";
+  el.innerHTML="<h4>Go deeper</h4>"+d.c.map((t,j)=>`<div class="check"><input type="checkbox" data-id="p${i}-${n+j}"> ${t}</div>`).join("")+"<h4>Hands-on</h4><ul>"+d.x.map(t=>`<li>${t}</li>`).join("")+"</ul><h4>Resources</h4>"+d.r.map(r=>`<a class="source" href="${r[1]}" target="_blank" rel="noopener noreferrer">${r[0]}</a>`).join("")+(d.k?`<p><b>Checkpoint:</b> ${d.k}</p>`:"");ph.appendChild(el)}
+function migrate(old){Object.values(state.profiles).forEach(p=>{const c=p.checks=p.checks||{};Object.keys(c).forEach(k=>{if(/^\d+$/.test(k)){const b=old[+k];if(b&&c[k])c[b.dataset.id]=true;delete c[k]}})});save()}
+function initPhaseCards(){
+  const grid=document.getElementById("phaseGrid"),view=document.getElementById("phaseView");
+  if(!grid||!view||grid.dataset.ready)return;grid.dataset.ready="1";
+  phases=[...document.querySelectorAll("#roadmap > .phase")];
+  const old=[...document.querySelectorAll("#roadmap .phase .check input")];
+  phases.forEach((ph,i)=>ph.querySelectorAll(".check input").forEach((b,j)=>b.dataset.id=`p${i}-${j}`));
+  migrate(old);phases.forEach((ph,i)=>enrich(ph,i));
+  const close=document.createElement("button");close.type="button";close.className="secondary close-phase";close.textContent="← Back to phases";
+  close.onclick=()=>{view.classList.remove("active");grid.scrollIntoView({behavior:"smooth",block:"start"})};
+  phases.forEach((ph,i)=>{
+    const title=ph.querySelector("h3")?.textContent||`Phase ${i}`,goal=ph.querySelector("p")?.textContent||"";
+    const card=document.createElement("button");card.type="button";card.className="phase-card";
+    card.innerHTML=`<span class="phase-num">PHASE ${i}</span><span class="phase-title">${escapeHTML(title.replace(/^PHASE\s+\d+\s*[—-]?\s*/i,""))}</span><span class="phase-goal">${escapeHTML(goal)}</span><span class="mini"><i id="pm-${i}"></i></span>`;
+    card.onclick=()=>{phases.forEach(p=>p.style.display="none");view.replaceChildren(close,ph);ph.style.display="block";view.classList.add("active");view.scrollIntoView({behavior:"smooth",block:"start"});loadChecks()};
+    grid.appendChild(card);ph.style.display="none";
+  });
+}
+const allBoxes=pre=>pre==="p"?phases.flatMap(p=>[...p.querySelectorAll("input[data-id]")]):[...document.querySelectorAll((pre==="j"?"#projects":"#"+PID[pre]+"-course")+" input[data-id]")];
+const getCheckboxes=()=>allBoxes("p");
+function updateProgress(){
+  [["p","bar","pct"],["r","bar-r","pct-r"],["b","bar-b","pct-b"],["j","bar-j","pct-j"],["c","bar-c","pct-c"],["f","bar-f","pct-f"],["a","bar-a","pct-a"],["g","bar-g","pct-g"]].forEach(([pre,bi,pi])=>{const bx=allBoxes(pre),d=bx.filter(x=>x.checked).length,pc=bx.length?Math.round(d/bx.length*100):0;document.getElementById(bi)?.style.setProperty("width",pc+"%");const el=document.getElementById(pi);if(el)el.textContent=pc+"% complete ("+d+" of "+bx.length+")"});
+  phases.forEach((ph,i)=>{const bx=[...ph.querySelectorAll("input[data-id]")],d=bx.filter(x=>x.checked).length,m=document.getElementById("pm-"+i);if(m)m.style.width=(bx.length?d/bx.length*100:0)+"%"});
+  document.querySelectorAll(".proj").forEach(p=>p.classList.toggle("done",p.querySelector("input").checked));document.querySelectorAll("details.mod").forEach(dt=>{const bx=[...dt.querySelectorAll("input")],t=dt.querySelector(".tag");if(t)t.textContent=bx.filter(x=>x.checked).length+"/"+bx.length});
+}
+function homeStats(){const pc=p=>{const b=allBoxes(p),d=b.filter(x=>x.checked).length;return b.length?Math.round(d/b.length*100):0},sp={red:"r",blue:"b",cloud:"c",dfir:"f",appsec:"a",grc:"g"}[state.selectedPath],set=(i,v)=>{const e=document.getElementById(i);if(e)e.textContent=v};
+  set("hs-p",pc("p")+"%");set("hs-j",pc("j")+"%");set("hs-x",sp?pc(sp)+"%":"Not chosen");set("hs-n",["p","j",...Object.keys(PID)].reduce((a,p)=>a+allBoxes(p).filter(x=>x.checked).length,0))}
+const _up=updateProgress;updateProgress=()=>{_up();homeStats()};
+function loadChecks(){const c=getProfile().checks||{};["p","j",...Object.keys(PID)].forEach(pre=>allBoxes(pre).forEach(b=>b.checked=!!c[b.dataset.id]));updateProgress()}
+document.addEventListener("change",e=>{const b=e.target;if(!b.matches||!b.matches("input[data-id]"))return;getProfile().checks[b.dataset.id]=b.checked;save();updateProgress();queueSync()});
+document.addEventListener("click",e=>{const c=e.target.closest&&e.target.closest(".check");if(c&&!["INPUT","A"].includes(e.target.tagName)){const i=c.querySelector("input");if(i){i.checked=!i.checked;i.dispatchEvent(new Event("change",{bubbles:true}))}}});
+
+function renderProfile(){
+  const p=getProfile(),name=state.current,bio=p.bio||"Cybersecurity learner",pfp=p.pfp||"",initial=(name[0]||"G").toUpperCase();
+  const setAvatar=el=>{if(!el)return;el.innerHTML=safePfp(pfp)?`<img src="${escapeHTML(pfp)}" alt="" referrerpolicy="no-referrer">`:escapeHTML(initial)};
+  setAvatar(document.getElementById("sideAvatar"));setAvatar(document.getElementById("profileAvatar"));
+  document.getElementById("sideName")?.replaceChildren(document.createTextNode(name));
+  document.getElementById("profileDisplayName")?.replaceChildren(document.createTextNode(name));
+  document.getElementById("profileBioPreview")?.replaceChildren(document.createTextNode(bio));
+  const n=document.getElementById("profileName");if(n)n.value=name;const b=document.getElementById("profileBio");if(b)b.value=bio;const u=document.getElementById("profilePfp");if(u)u.value=pfp;
+}
+function switchProfile(name){name=String(name||"").trim().slice(0,32);if(!name||BADN.test(name)||name[0]==="@")return;state.current=name;if(!Object.prototype.hasOwnProperty.call(state.profiles,name))state.profiles[name]={checks:{},bio:"Cybersecurity learner",pfp:""};save();renderProfile();loadChecks();}
+
+let csrfP=null;
+async function ensureCsrf(){if(state.api.csrf)return;csrfP=csrfP||fetch(API_BASE+"/api/csrf",{credentials:"include",cache:"no-store",headers:{Accept:"application/json"}}).then(r=>r.ok?r.json():{}).then(d=>{state.api.csrf=typeof d.csrf==="string"?d.csrf.slice(0,200):""}).catch(()=>{}).finally(()=>{csrfP=null});await csrfP}
+async function api(method,path,body,retry=true){
+  if(!API_BASE) throw new Error("No Cybex backend is configured. Local mode is active.");
+  if(retry&&method==="POST"&&/\/api\/(login|register)$/.test(path)){const n=Date.now();if(n-(api.t||0)<1500)throw new Error("Slow down and try again in a moment.");api.t=n}
+  if(method!=="GET")await ensureCsrf();
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),10000);
+  const opts={method,credentials:"include",cache:"no-store",redirect:"error",referrerPolicy:"no-referrer",signal:ctl.signal,headers:{Accept:"application/json"}};
+  if(body!==undefined){opts.headers["Content-Type"]="application/json";opts.body=JSON.stringify(body)}
+  if(method!=="GET"&&state.api.csrf)opts.headers["X-CSRF-Token"]=state.api.csrf;
+  let r;try{r=await fetch(API_BASE+path,opts)}catch(e){throw new Error(e.name==="AbortError"?"The server took too long to respond.":"Could not reach the server.")}finally{clearTimeout(tm)}
+  let data={};try{data=await r.json()}catch{}
+  if(!data||typeof data!=="object")data={};
+  if(r.status===403&&data.code==="csrf"&&retry){state.api.csrf="";return api(method,path,body,false)}
+  if(!r.ok){let m=typeof data.error==="string"?data.error.slice(0,200):"Request failed ("+r.status+")";if(r.status===429){const w=parseInt(r.headers.get("Retry-After"),10);m="Too many requests. "+(w>0?"Try again in "+w+" seconds.":"Please wait a moment.")}const er=new Error(m);er.status=r.status;er.code=data.code;throw er}
+  if(typeof data.csrf==="string")state.api.csrf=data.csrf.slice(0,200);
+  return data;
+}
+function setAuthStatus(msg){const el=document.getElementById("authStatus");if(el)el.textContent=msg;}
+function renderAuthUser(u){if(!u){setAuthStatus(API_BASE?"Not logged in.":"Local-only mode until an API endpoint is configured.");return}setAuthStatus(`Logged in as @${u.username} • server progress ${u.progress}%`)}
+function cleanUser(u){if(!u||typeof u!=="object")return null;const un=String(u.username||"");if(!/^[A-Za-z0-9_]{3,24}$/.test(un))return null;return{username:un,displayName:String(u.displayName||un).slice(0,32),bio:String(u.bio||"Cybersecurity learner").slice(0,160),pfp:safePfp(u.pfp),progress:Math.max(0,Math.min(100,Math.round(Number(u.progress)||0))),discoverable:u.discoverable===true}}
+const isBound=()=>state.current[0]==="@";
+function bindAccount(u){const key="@"+u.username;if(!Object.prototype.hasOwnProperty.call(state.profiles,key))state.profiles[key]={checks:{},bio:u.bio,pfp:u.pfp};const p=state.profiles[key];p.bio=u.bio;p.pfp=u.pfp;state.current=key;save();renderProfile();loadChecks()}
+function unbind(){const cur=state.current;if(cur[0]==="@"){delete state.profiles[cur];const back=state.api.prev&&Object.prototype.hasOwnProperty.call(state.profiles,state.api.prev)?state.api.prev:"Guest";if(!state.profiles[back])state.profiles[back]={checks:{},bio:"Cybersecurity learner",pfp:""};state.current=back}state.api.user=null;state.api.csrf="";state.api.pv=null;save();renderProfile();loadChecks();renderAuthUser(null);refreshMessages()}
+async function pullMerge(){const d=await api("GET","/api/progress"),p=getProfile(),m=cleanChecks(d.progress);for(const[k,v]of Object.entries(cleanChecks(p.checks)))if(v)m[k]=true;p.checks=m;state.api.pv=d.version===undefined?null:d.version;save();loadChecks()}
+async function afterAuth(raw){const u=cleanUser(raw);if(!u)throw new Error("Unexpected response from the server.");const prev=isBound()?state.api.prev:state.current;state.api.prev=prev;const fresh=!Object.prototype.hasOwnProperty.call(state.profiles,"@"+u.username);state.api.user=u;bindAccount(u);await pullMerge();
+  const p=getProfile(),pc=(state.profiles[prev]&&state.profiles[prev].checks)||{};
+  if(fresh&&!Object.values(p.checks).some(Boolean)&&Object.values(pc).some(Boolean)&&confirm('Copy the progress from your local profile "'+prev+'" into this account?')){p.checks=cleanChecks(pc);save();loadChecks();queueSync()}
+  renderAuthUser(u);refreshMessages()}
+let syncTimer=0,syncBusy=false,syncDirty=false,syncFails=0;
+function queueSync(){if(!(API_BASE&&state.api.user&&isBound()))return;syncDirty=true;clearTimeout(syncTimer);syncTimer=setTimeout(runSync,800)}
+async function runSync(){if(syncBusy||!syncDirty||!API_BASE||!state.api.user||!isBound())return;syncBusy=true;syncDirty=false;
+  try{const d=await api("PUT","/api/progress",{progress:cleanChecks(getProfile().checks),baseVersion:state.api.pv});if(d.version!==undefined)state.api.pv=d.version;syncFails=0}
+  catch(e){if(++syncFails<=3){if(e.status===409){try{await pullMerge()}catch{}}syncDirty=true;syncTimer=setTimeout(runSync,2000*syncFails)}else setAuthStatus("Could not sync progress: "+e.message)}
+  finally{syncBusy=false}}
+addEventListener("pagehide",()=>{if(syncDirty&&API_BASE&&state.api.user&&isBound()){try{fetch(API_BASE+"/api/progress",{method:"PUT",keepalive:true,credentials:"include",referrerPolicy:"no-referrer",headers:{"Content-Type":"application/json","X-CSRF-Token":state.api.csrf||""},body:JSON.stringify({progress:cleanChecks(getProfile().checks),baseVersion:state.api.pv})}).catch(()=>{})}catch{}}});
+async function tryRestoreSession(){if(!API_BASE){renderAuthUser(null);return}try{const d=await api("GET","/api/me");await afterAuth(d.user)}catch{if(isBound())unbind();else renderAuthUser(null)}}
+
+function renderUserResults(users){const box=document.getElementById("userResults");if(!box)return;if(!users.length){box.innerHTML='<div class="note">No profiles found.</div>';return;}box.innerHTML=users.map(u=>{const av=safePfp(u.pfp)?`<img src="${escapeHTML(u.pfp)}" alt="" referrerpolicy="no-referrer">`:escapeHTML((String(u.username)[0]||"?").toUpperCase());return `<div class="user-result"><div class="mini-avatar">${av}</div><div class="grow"><b>${escapeHTML(u.displayName)}</b> <span class="note">@${escapeHTML(u.username)}</span><br><small>${escapeHTML(u.bio||"Cybersecurity learner")} • ${Number(u.progress)||0}% roadmap</small></div><button class="secondary msg-user" data-user="${escapeHTML(u.username)}">Message</button></div>`}).join("");
+  box.querySelectorAll(".msg-user").forEach(b=>b.onclick=()=>{document.getElementById("messageTo").value=b.dataset.user;document.getElementById("messageBody").focus();});
+}
+async function searchUsers(){const q=document.getElementById("userSearch").value.trim().slice(0,24);
+  if(API_BASE&&state.api.user){if(q.length<2){document.getElementById("userResults").innerHTML='<div class="note">Type at least 2 characters to search.</div>';return}if(Date.now()-(searchUsers.t||0)<800)return;searchUsers.t=Date.now();
+    try{const d=await api("GET","/api/users?q="+encodeURIComponent(q));renderUserResults((Array.isArray(d.users)?d.users:[]).slice(0,25).map(cleanUser).filter(Boolean))}catch(e){setAuthStatus(e.message)}return}
+  const local=Object.entries(state.profiles).filter(([name,p])=>name[0]!=="@"&&(!q||name.toLowerCase().includes(q.toLowerCase())||(p.bio||"").toLowerCase().includes(q.toLowerCase()))).map(([username,p])=>({username,displayName:username,bio:p.bio||"Cybersecurity learner",pfp:p.pfp||"",progress:Math.round(Object.values(p.checks||{}).filter(Boolean).length/Math.max(1,getCheckboxes().length)*100)}));renderUserResults(local);}
+function renderBlocked(){const el=document.getElementById("blockedList");if(!el)return;el.innerHTML=state.blocked.length?"Blocked: "+state.blocked.map(u=>`@${escapeHTML(u)} <button class="secondary mini-btn" data-unblock="${escapeHTML(u)}">Unblock</button>`).join(" "):"";el.querySelectorAll("[data-unblock]").forEach(b=>b.onclick=async()=>{const u=b.dataset.unblock;state.blocked=state.blocked.filter(x=>x!==u);save();try{if(state.api.user)await api("DELETE","/api/blocks",{username:u})}catch{}renderBlocked();refreshMessages()})}
+async function refreshMessages(){const box=document.getElementById("messageList");if(!box)return;renderBlocked();if(!API_BASE||!state.api.user){box.innerHTML='<div class="note">Private messaging is available after connecting the backend and logging in.</div>';return}
+  try{const d=await api("GET","/api/messages"),me=state.api.user.username.toLowerCase();
+    const list=(Array.isArray(d.messages)?d.messages:[]).slice(0,100).filter(m=>m&&!state.blocked.includes(String(m.from_username).toLowerCase()));
+    box.innerHTML=list.map(m=>{const inc=String(m.from_username).toLowerCase()!==me;return `<div class="message"><b>@${escapeHTML(m.from_username)}</b> → <b>@${escapeHTML(m.to_username)}</b><br>${escapeHTML(String(m.body).slice(0,1000))}<br><small>${escapeHTML(m.created_at)}</small>${inc?` <button class="secondary mini-btn" data-act="block" data-u="${escapeHTML(m.from_username)}">Block</button><button class="secondary mini-btn" data-act="report" data-id="${escapeHTML(m.id)}">Report</button>`:""}</div>`}).join("")||'<div class="note">No messages yet.</div>';
+    box.querySelectorAll("button[data-act]").forEach(b=>b.onclick=async()=>{const st=document.getElementById("messageStatus");
+      if(b.dataset.act==="block"){const u=String(b.dataset.u).toLowerCase();if(/^[a-z0-9_]{3,24}$/.test(u)&&!state.blocked.includes(u)&&state.blocked.length<200)state.blocked.push(u);save();try{await api("POST","/api/blocks",{username:b.dataset.u})}catch{}st.textContent="Blocked @"+b.dataset.u+".";refreshMessages()}
+      else if(confirm("Report this message to the moderators?")){try{await api("POST","/api/messages/report",{messageId:b.dataset.id});st.textContent="Report sent. Thank you."}catch(e){st.textContent=e.message}}})
+  }catch(e){box.innerHTML=`<div class="note">${escapeHTML(e.message)}</div>`;}}
+function readPfp(file){return new Promise((res,rej)=>{if(!file||!/^image\/(png|jpeg|webp)$/.test(file.type)||file.size>5e6)return rej(new Error("Choose a PNG, JPEG or WebP image under 5 MB."));const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");c.width=c.height=128;const m=Math.min(im.width,im.height);c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,128,128);const d=c.toDataURL("image/jpeg",0.8);safePfp(d)?res(d):rej(new Error("Could not process that image."))};im.onerror=()=>rej(new Error("Could not read that image."));im.src=fr.result};fr.onerror=()=>rej(new Error("Could not read that file."));fr.readAsDataURL(file)})}
+let authPfpData="";
+
+// Bind tabs, paths and sidebar.
+document.addEventListener("click",e=>{const g=e.target.closest&&e.target.closest("[data-go]");if(g)activateTab(g.dataset.go)});
+document.querySelectorAll(".tab").forEach(btn=>btn.addEventListener("click",()=>activateTab(btn.dataset.tab)));
+document.querySelectorAll(".path-card").forEach(btn=>btn.addEventListener("click",()=>setPath(btn.dataset.path)));
+document.querySelectorAll(".side-link").forEach(btn=>btn.addEventListener("click",()=>activateTab(btn.dataset.side)));
+
+const $=id=>document.getElementById(id);
+$("saveProfile").onclick=async()=>{const p=getProfile(),st=$("saveStatus"),bound=isBound();
+  p.bio=($("profileBio").value.trim()||"Cybersecurity learner").slice(0,160);
+  const requested=($("profileName").value.trim()||"Guest").slice(0,32);
+  if(!bound){if(BADN.test(requested)||requested[0]==="@"){st.textContent="That name is reserved. Choose another.";return}
+    if(requested!==state.current&&Object.prototype.hasOwnProperty.call(state.profiles,requested)){st.textContent="A profile named "+requested+" already exists. Choose another name.";return}
+    if(requested!==state.current){const old=state.current;state.profiles[requested]=state.profiles[old];delete state.profiles[old];state.current=requested}}
+  save();renderProfile();
+  if(bound&&API_BASE&&state.api.user){try{const d=await api("PUT","/api/me",{displayName:requested,bio:p.bio,pfp:p.pfp,discoverable:$("authDiscover").checked});const u=cleanUser(d.user);if(u){state.api.user=u;renderAuthUser(u)}}catch(e){setAuthStatus(e.message)}}};
+$("profilePfpFile").onchange=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;readPfp(f).then(d=>{getProfile().pfp=d;$("saveProfile").click()}).catch(x=>{$("saveStatus").textContent=x.message})};
+$("pfpClear").onclick=()=>{getProfile().pfp="";$("saveProfile").click()};
+$("authPfpFile").onchange=e=>{const f=e.target.files[0];e.target.value="";if(!f)return;readPfp(f).then(d=>{authPfpData=d;setAuthStatus("Picture ready for registration.")}).catch(x=>setAuthStatus(x.message))};
+$("newProfile").onclick=()=>{const n=prompt("Name your new local profile:");if(n)switchProfile(n)};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify({profile:state.current.replace(/^@/,""),data:getProfile()},null,2)],{type:"application/json"});const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="cybex-"+state.current.replace(/\W+/g,"-")+".json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$("importBtn").onclick=()=>$("importFile").click();
+$("importFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;if(f.size>200000){alert("That file is too large to be a Cybex progress file.");return}
+  try{const data=JSON.parse(await f.text());const name=String(data.profile||"Imported").trim().slice(0,32)||"Imported";if(BADN.test(name)||name[0]==="@")throw 0;
+    if(Object.prototype.hasOwnProperty.call(state.profiles,name)&&!confirm('A profile named "'+name+'" already exists. Replace it?'))return;
+    const dd=(data.data&&typeof data.data==="object")?data.data:{};
+    state.profiles[name]={checks:cleanChecks(dd.checks),bio:String(dd.bio||"Cybersecurity learner").slice(0,160),pfp:safePfp(dd.pfp)};state.current=name;save();renderProfile();loadChecks()}catch{alert("That progress file could not be read.")}};
+
+$("registerBtn").onclick=async()=>{if(!API_BASE)return setAuthStatus("Backend not configured. Local profiles still work on GitHub Pages.");
+  const un=$("authUsername").value.trim(),pw=$("authPassword").value;
+  if(!/^[A-Za-z0-9_]{3,24}$/.test(un))return setAuthStatus("Username must be 3 to 24 letters, numbers or underscores.");
+  if(pw.length<10||pw.length>128)return setAuthStatus("Password must be 10 to 128 characters.");
+  try{const d=await api("POST","/api/register",{username:un,displayName:$("authDisplay").value.trim().slice(0,32),password:pw,bio:$("authBio").value.trim().slice(0,160),pfp:authPfpData,discoverable:$("authDiscover").checked});$("authPassword").value="";authPfpData="";await afterAuth(d.user);setAuthStatus(`Account created as @${state.api.user.username}.`)}catch(e){setAuthStatus(e.message)}};
+$("loginBtn").onclick=async()=>{if(!API_BASE)return setAuthStatus("Backend not configured. Local mode is active.");
+  const un=$("authUsername").value.trim(),pw=$("authPassword").value;
+  if(!/^[A-Za-z0-9_]{3,24}$/.test(un)||!pw||pw.length>128)return setAuthStatus("Enter your username and password.");
+  try{const d=await api("POST","/api/login",{username:un,password:pw});$("authPassword").value="";await afterAuth(d.user);setAuthStatus(`Logged in as @${state.api.user.username}.`)}catch(e){setAuthStatus(e.message)}};
+$("logoutBtn").onclick=async()=>{if(!API_BASE||!state.api.user)return setAuthStatus("You are not logged in to a backend account.");
+  try{await api("POST","/api/logout")}catch{}unbind()};
+$("deleteAccount").onclick=async()=>{if(!API_BASE||!state.api.user)return setAuthStatus("You are not logged in to a backend account.");
+  const pw=$("authPassword").value;if(!pw)return setAuthStatus("Enter your password above to confirm deletion.");
+  if(!confirm("Permanently delete your server account, progress and messages? This cannot be undone."))return;
+  try{await api("DELETE","/api/me",{password:pw});$("authPassword").value="";unbind();setAuthStatus("Your server account was deleted.")}catch(e){setAuthStatus(e.message)}};
+$("searchUsers").onclick=searchUsers;$("userSearch").addEventListener("keydown",e=>{if(e.key==="Enter")searchUsers()});
+const MSG={last:0,times:[],body:"",at:0,busy:false};
+$("sendMessage").onclick=async()=>{const st=$("messageStatus"),btn=$("sendMessage");
+  if(!API_BASE||!state.api.user)return st.textContent="Connect the backend and log in before sending private messages.";
+  if(MSG.busy)return;const to=$("messageTo").value.trim(),body=$("messageBody").value.trim(),now=Date.now();
+  if(!/^[A-Za-z0-9_]{3,24}$/.test(to))return st.textContent="Enter a valid recipient username.";
+  if(to.toLowerCase()===state.api.user.username.toLowerCase())return st.textContent="You cannot message yourself.";
+  if(!body)return st.textContent="Write a message first.";
+  if(body.length>1000)return st.textContent="Messages can be at most 1000 characters.";
+  if((body.match(/https?:\/\/|www\./gi)||[]).length>1)return st.textContent="Messages can contain at most one link.";
+  if(now-MSG.last<5000)return st.textContent="Please wait "+Math.ceil((5000-(now-MSG.last))/1000)+" seconds before sending another message.";
+  MSG.times=MSG.times.filter(t=>now-t<60000);if(MSG.times.length>=6)return st.textContent="You are sending messages too quickly. Try again in a minute.";
+  if(body===MSG.body&&now-MSG.at<60000)return st.textContent="That looks like a duplicate of your last message.";
+  MSG.busy=true;btn.disabled=true;
+  try{await api("POST","/api/messages",{to,body});MSG.last=MSG.at=Date.now();MSG.times.push(MSG.last);MSG.body=body;$("messageBody").value="";st.textContent="Message sent.";refreshMessages()}catch(e){st.textContent=e.message}finally{MSG.busy=false;btn.disabled=false}};
+
+window.addEventListener("load",()=>{
+  const boot=document.getElementById("boot-screen");
+  const bar=document.getElementById("bootBar"),st=document.getElementById("bootStatus"),lock=document.getElementById("bootLock");
+  const steps=["Loading modules","Checking local storage","Mounting roadmap","Preparing labs","Unlocking"];
+  const total=matchMedia("(prefers-reduced-motion:reduce)").matches?900:3400,t0=performance.now();let k=-1;
+  (function tick(){const p=Math.min(1,(performance.now()-t0)/total);bar.style.width=p*100+"%";const n=Math.min(steps.length-1,Math.floor(p*steps.length));
+    if(n!==k){k=n;st.textContent="[ "+steps[n]+"... ]"}
+    if(p<1)return requestAnimationFrame(tick);
+    lock.textContent="🔓";lock.classList.add("open");st.textContent="[ Access granted ]";setTimeout(()=>boot?.classList.add("hide"),600)})();
+});
+
+
+const LIB=[
+["Foundations","TryHackMe Pre Security","https://tryhackme.com/path/outline/presecurity","Guided start for absolute beginners."],
+["Foundations","TryHackMe Cyber Security 101","https://tryhackme.com/path/outline/cybersecurity101","Broad hands-on core skills."],
+["Foundations","Professor Messer","https://www.professormesser.com/","Free video courses for networking and security basics."],
+["Foundations","CS50","https://cs50.harvard.edu/x/","How computers work, from the ground up."],
+["Foundations","Cloudflare Learning Center","https://www.cloudflare.com/learning/","Plain-language explainers on DNS, TLS, DDoS and more."],
+["Systems","Linux Journey","https://linuxjourney.com/","Gentle, structured Linux lessons."],
+["Systems","The Linux Command Line","https://linuxcommand.org/tlcl.php","A free book on the shell."],
+["Systems","Explainshell","https://explainshell.com/","Paste a command and see what each part does."],
+["Systems","Windows security docs","https://learn.microsoft.com/en-us/windows/security/","Official Microsoft security documentation."],
+["Systems","Sysinternals documentation","https://learn.microsoft.com/en-us/sysinternals/","Guides for the Windows troubleshooting suite."],
+["Programming","Python tutorial","https://docs.python.org/3/tutorial/","The official Python tutorial."],
+["Programming","Pro Git","https://git-scm.com/book/en/v2","The free Git book."],
+["Programming","Regex101","https://regex101.com/","Test and explain regular expressions."],
+["Programming","Beej's Guide to Network Programming","https://beej.us/guide/bgnet/","How sockets actually work."],
+["Web","PortSwigger Web Security Academy","https://portswigger.net/web-security","Free web vulnerability labs."],
+["Web","OWASP WSTG","https://owasp.org/projects/web-security-testing-guide","The web testing methodology."],
+["Web","OWASP Top 10","https://owasp.org/projects/Top-Ten","The most common web risks."],
+["Web","OWASP Cheat Sheet Series","https://cheatsheetseries.owasp.org/","Short guides on secure implementation."],
+["Cryptography","Cryptopals","https://cryptopals.com/","Learn cryptography by breaking flawed schemes in practice exercises."],
+["Frameworks","NIST Cybersecurity Framework","https://www.nist.gov/cyberframework","How organizations structure security."],
+["Frameworks","MITRE ATT&CK","https://attack.mitre.org/","Catalog of attacker techniques for detection work."],
+["Frameworks","MITRE D3FEND","https://d3fend.mitre.org/","Catalog of defensive techniques."],
+["Frameworks","CIS Benchmarks","https://www.cisecurity.org/cis-benchmarks","Hardening guides per system."],
+["Frameworks","NIST SP 800-61","https://csrc.nist.gov/pubs/sp/800/61/r2/final","The incident handling guide."],
+["Vulnerabilities","CVE Program","https://www.cve.org/","Official list of publicly known vulnerabilities."],
+["Vulnerabilities","National Vulnerability Database","https://nvd.nist.gov/","Severity scores and details for CVEs."],
+["News and reports","The DFIR Report","https://thedfirreport.com/","Real intrusion case write-ups."],
+["News and reports","Krebs on Security","https://krebsonsecurity.com/","Investigative security journalism."],
+["News and reports","CISA","https://www.cisa.gov/","US government advisories and guidance."],
+["News and reports","SANS Reading Room","https://www.sans.org/white-papers/","Free security white papers."],
+["Practice","picoCTF","https://picoctf.org/","Beginner-friendly capture-the-flag challenges."],
+["Practice","Hack The Box Academy","https://academy.hackthebox.com/","Structured modules and labs."]];
+const TOOLS=[
+["Network","Nmap","https://nmap.org/","Discovers hosts and services on networks you are allowed to scan.","Both"],
+["Network","Wireshark","https://www.wireshark.org/","Captures and inspects network traffic.","Both"],
+["Network","Zeek","https://zeek.org/","Turns network traffic into structured logs.","Blue"],
+["Network","Suricata","https://suricata.io/","Network intrusion detection and prevention engine.","Blue"],
+["Lab setup","VirtualBox","https://www.virtualbox.org/","Free virtualization for building isolated labs.","Both"],
+["Lab setup","Kali Linux","https://www.kali.org/","Linux distribution packaged for security testing. Use in a VM.","Red"],
+["Lab setup","Docker","https://www.docker.com/","Runs practice apps like Juice Shop in containers.","Both"],
+["Lab setup","Security Onion","https://securityonion.net/","Free platform for network monitoring and threat hunting.","Blue"],
+["Web","Burp Suite Community","https://portswigger.net/burp/communitydownload","Intercepting proxy for testing web apps you are authorized to test.","Red"],
+["Web","OWASP ZAP","https://www.zaproxy.org/","Free web application security scanner.","Both"],
+["Analysis","CyberChef","https://gchq.github.io/CyberChef/","Encode, decode and transform data in the browser.","Both"],
+["Analysis","Ghidra","https://ghidra-sre.org/","Reverse engineering suite from the NSA.","Both"],
+["Analysis","VirusTotal","https://www.virustotal.com/","Checks files, hashes and URLs against many engines. Do not upload private files.","Blue"],
+["Analysis","ANY.RUN","https://any.run/","Interactive online malware sandbox.","Blue"],
+["Detection","Wazuh","https://wazuh.com/","Open source SIEM and endpoint monitoring.","Blue"],
+["Detection","Elastic Security","https://www.elastic.co/security","Search, SIEM and detection built on Elasticsearch.","Blue"],
+["Detection","Sigma","https://sigmahq.io/","Shareable detection rule format.","Blue"],
+["Detection","Sysmon","https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon","Detailed Windows event logging.","Blue"],
+["Detection","Atomic Red Team","https://atomicredteam.io/","Small tests that mimic attacker techniques, for checking detections in your own lab.","Both"],
+["Detection","ATT&CK Navigator","https://mitre-attack.github.io/attack-navigator/","Visualize technique coverage.","Both"],
+["Forensics","Autopsy","https://www.autopsy.com/","Disk image analysis.","Blue"],
+["Forensics","Volatility","https://volatilityfoundation.org/","Memory forensics framework.","Blue"],
+["Forensics","Velociraptor","https://docs.velociraptor.app/","Endpoint collection and hunting.","Blue"],
+["Forensics","Sysinternals Suite","https://learn.microsoft.com/en-us/sysinternals/","Windows process, autostart and network utilities.","Both"],
+["Vulnerability","OpenVAS","https://www.openvas.org/","Open source vulnerability scanning.","Both"],
+["Vulnerability","Metasploit","https://www.metasploit.com/","Exploitation framework. Only for lab machines you own or are cleared to test.","Red"],
+["Network","tcpdump","https://www.tcpdump.org/","Command-line packet capture.","Both"],
+["Network","Snort","https://www.snort.org/","Network intrusion detection.","Blue"],
+["Network","pfSense","https://www.pfsense.org/","Firewall and router for lab networks.","Both"],
+["Network","OPNsense","https://opnsense.org/","Open source firewall and routing platform.","Both"],
+["Lab setup","Proxmox","https://www.proxmox.com/","Virtualization server for a larger home lab.","Both"],
+["Code security","Semgrep","https://semgrep.dev/","Static code analysis with readable rules.","AppSec"],
+["Code security","Bandit","https://bandit.readthedocs.io/","Finds common security issues in Python code.","AppSec"],
+["Code security","Gitleaks","https://gitleaks.io/","Finds secrets committed to git repos.","AppSec"],
+["Code security","Trivy","https://trivy.dev/","Scans images, dependencies and configs for issues.","AppSec"],
+["Code security","Checkov","https://www.checkov.io/","Scans infrastructure-as-code for risky settings.","Cloud"],
+["Code security","OWASP Dependency-Check","https://owasp.org/www-project-dependency-check/","Flags known-vulnerable dependencies.","AppSec"],
+["Cloud","Prowler","https://prowler.com/","Checks cloud accounts against security best practice.","Cloud"],
+["Hardening","Lynis","https://cisofy.com/lynis/","Audits Linux hardening.","Blue"],
+["Hardening","ClamAV","https://www.clamav.net/","Open source antivirus engine.","Blue"],
+["Hardening","KeePassXC","https://keepassxc.org/","Offline password manager.","Everyone"],
+["Hardening","Bitwarden","https://bitwarden.com/","Cloud password manager.","Everyone"],
+["Hardening","Have I Been Pwned","https://haveibeenpwned.com/","Check whether your email appeared in a breach.","Everyone"],
+["Analysis","Cutter","https://cutter.re/","Reverse engineering GUI.","Both"],
+["Analysis","x64dbg","https://x64dbg.com/","Windows debugger for analysis in a VM.","Both"],
+["Analysis","YARA","https://virustotal.github.io/yara/","Pattern matching for classifying files.","Blue"],
+["Detection","Graylog","https://graylog.org/","Log management and search.","Blue"],
+["Detection","Splunk","https://www.splunk.com/","Commercial SIEM with a free learning path.","Blue"],
+["Detection","MISP","https://www.misp-project.org/","Threat intelligence sharing platform.","Blue"],
+["Forensics","Timesketch","https://timesketch.org/","Collaborative forensic timelines.","Blue"],
+["Forensics","Plaso","https://plaso.readthedocs.io/","Builds super-timelines from many artifacts.","Blue"]];
+function mkFilter(data,pre){let cat="All";const q=document.getElementById(pre+"Search"),chips=document.getElementById(pre+"Chips"),list=document.getElementById(pre+"List");
+  const draw=()=>{const cats=["All",...new Set(data.map(x=>x[0]))],t=q.value.toLowerCase();
+    chips.innerHTML=cats.map(c=>`<button type="button" class="chip" aria-pressed="${c===cat}" data-c="${escapeHTML(c)}">${escapeHTML(c)}</button>`).join("");
+    chips.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{cat=b.dataset.c;draw()});
+    const rows=data.filter(x=>(cat==="All"||x[0]===cat)&&x.join(" ").toLowerCase().includes(t));
+    list.innerHTML=rows.map(x=>`<a class="lib-item" href="${escapeHTML(x[2])}" target="_blank" rel="noopener noreferrer"><b>${escapeHTML(x[1])}</b><span>${escapeHTML(x[3])}</span><br><small>${escapeHTML(x[0])}${x[4]?" • "+x[4]+" team":""}</small></a>`).join("")||'<div class="note">Nothing matches that search.</div>'};
+  q.addEventListener("input",draw);draw()}
+const sl=document.createElement("div");sl.id="scrollLine";document.body.appendChild(sl);let st=0;
+addEventListener("scroll",()=>{if(st)return;st=requestAnimationFrame(()=>{st=0;const h=document.documentElement.scrollHeight-innerHeight;sl.style.transform="scaleX("+(h>0?scrollY/h:0)+")"})},{passive:true});
+mkFilter(LIB,"lib");mkFilter(TOOLS,"tool");buildPaths();initPhaseCards();loadChecks();renderProfile();
+const hash=HP[0]||state.lastTab||WN.t||"start";const valid=[...document.querySelectorAll(".tab")].map(x=>x.dataset.tab).concat(["profile","settings","appearance","account"]);activateTab(valid.includes(hash)?hash:"start");
+tryRestoreSession();
+</script>
+</body>
+</html>
