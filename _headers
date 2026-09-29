@@ -1,0 +1,8 @@
+/*
+  Content-Security-Policy: default-src 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; img-src 'self' data:; connect-src 'self'; script-src 'self' 'sha256-X3RXEbvAQjfaRbzreo+Rtildwug+BKIjJGD4eXViDIw='; style-src 'self' 'sha256-XWEoNn20tYttnLj2SMn9S9oQbjqiE1GgEMgDp7cS9AE='; form-action 'none'
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+  Cross-Origin-Opener-Policy: same-origin
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
