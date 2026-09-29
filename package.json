@@ -1,0 +1,11 @@
+{
+  "name": "cybex-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend for the Cybex learning site. No dependencies to install.",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "test": "node --disable-warning=ExperimentalWarning test.js"
+  }
+}
